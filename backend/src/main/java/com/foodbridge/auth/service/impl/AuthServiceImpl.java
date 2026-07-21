@@ -14,6 +14,7 @@ import com.foodbridge.security.JwtService;
 import com.foodbridge.user.entity.User;
 import com.foodbridge.user.enums.AccountStatus;
 import com.foodbridge.user.repository.UserRepository;
+import com.foodbridge.exception.*;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -31,11 +32,11 @@ public class AuthServiceImpl implements AuthService {
     public MessageResponse register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists.");
+        	throw new DuplicateResourceException("Email already exists.");
         }
 
         if (userRepository.existsByPhone(request.getPhone())) {
-            throw new RuntimeException("Phone number already exists.");
+        	throw new DuplicateResourceException("Phone number already exists.");
         }
 
         User user = new User();
@@ -63,13 +64,13 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
         if (!passwordEncoder.matches(
                 request.getPassword(),
                 user.getPassword())) {
 
-            throw new RuntimeException("Invalid password.");
+            throw new UnauthorizedException("Invalid email or password.");
         }
 
         if (user.getStatus() != AccountStatus.APPROVED) {
