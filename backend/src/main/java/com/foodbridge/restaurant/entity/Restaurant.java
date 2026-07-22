@@ -1,4 +1,4 @@
-package com.foodbridge.ngo.entity;
+package com.foodbridge.restaurant.entity;
 
 import com.foodbridge.common.entity.BaseEntity;
 import com.foodbridge.user.entity.User;
@@ -6,30 +6,29 @@ import com.foodbridge.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
-@Table(name = "ngos")
+@Table(name = "restaurants")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Ngo extends BaseEntity {
+public class Restaurant extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    @NotNull(message = "NGO user is required")
+    @NotNull(message = "Restaurant user is required")
     private User user;
 
     @Column(nullable = false, length = 150)
-    @NotBlank(message = "NGO name is required")
+    @NotBlank(message = "Restaurant name is required")
     @Size(max = 150)
-    private String ngoName;
+    private String restaurantName;
 
     @Column(nullable = false)
     @NotBlank(message = "Address is required")
@@ -46,16 +45,11 @@ public class Ngo extends BaseEntity {
     private Double longitude;
 
     @Column(nullable = false, unique = true, length = 100)
-    @NotBlank(message = "Registration number is required")
-    private String registrationNumber;
+    @NotBlank(message = "License number is required")
+    private String licenseNumber;
 
     @Column(length = 255)
     private String placeId;
-
-    @Column(nullable = false)
-    @Min(value = 1, message = "Operating radius must be at least 1 km")
-    @Builder.Default
-    private Integer operatingRadius = 20;
 
     @Column(nullable = false)
     @Builder.Default
