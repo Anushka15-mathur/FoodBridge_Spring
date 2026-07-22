@@ -1,5 +1,6 @@
 package com.foodbridge.admin.service.impl;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,16 +30,23 @@ public class AdminServiceImpl implements AdminService {
 	private final AdminMapper adminMapper;
 	
 	@Override
-	public PageResponse<AdminUserSummaryResponse> getAllUsers(int page, int size) {
+	public PageResponse<AdminUserSummaryResponse> getAllUsers(
+	        int page,
+	        int size,
+	        String sortBy,
+	        String direction) {
 
-	    Pageable pageable = PageRequest.of(page, size);
+	    Sort sort = direction.equalsIgnoreCase("desc")
+	            ? Sort.by(sortBy).descending()
+	            : Sort.by(sortBy).ascending();
+
+	    Pageable pageable = PageRequest.of(page, size, sort);
 
 	    Page<User> userPage = userRepository.findAll(pageable);
 
 	    return PageResponseUtil.toPageResponse(
 	            userPage,
-	            adminMapper.toSummaryResponseList(userPage.getContent())
-	    );
+	            adminMapper.toSummaryResponseList(userPage.getContent()));
 	}
 
 	@Override
@@ -51,19 +59,25 @@ public class AdminServiceImpl implements AdminService {
 
 	    return adminMapper.toDetailsResponse(user);
 	}
-
 	@Override
-	public PageResponse<AdminUserSummaryResponse> getPendingUsers(int page, int size) {
+	public PageResponse<AdminUserSummaryResponse> getPendingUsers(
+	        int page,
+	        int size,
+	        String sortBy,
+	        String direction) {
 
-	    Pageable pageable = PageRequest.of(page, size);
+	    Sort sort = direction.equalsIgnoreCase("desc")
+	            ? Sort.by(sortBy).descending()
+	            : Sort.by(sortBy).ascending();
+
+	    Pageable pageable = PageRequest.of(page, size, sort);
 
 	    Page<User> userPage =
 	            userRepository.findByStatus(AccountStatus.PENDING, pageable);
 
 	    return PageResponseUtil.toPageResponse(
 	            userPage,
-	            adminMapper.toSummaryResponseList(userPage.getContent())
-	    );
+	            adminMapper.toSummaryResponseList(userPage.getContent()));
 	}
 	
 	
