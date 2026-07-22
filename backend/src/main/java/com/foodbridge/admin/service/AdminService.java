@@ -9,11 +9,19 @@ import com.foodbridge.user.enums.Role;
 
 public interface AdminService {
 
-    PageResponse<AdminUserSummaryResponse> getAllUsers(int page, int size);
+	PageResponse<AdminUserSummaryResponse> getAllUsers(
+	        int page,
+	        int size,
+	        String sortBy,
+	        String direction);
 
     AdminUserDetailsResponse getUserById(Long id);
 
-    PageResponse<AdminUserSummaryResponse> getPendingUsers(int page, int size);
+    PageResponse<AdminUserSummaryResponse> getPendingUsers(
+            int page,
+            int size,
+            String sortBy,
+            String direction);
 
     void approveUser(Long id);
 

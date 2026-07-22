@@ -32,18 +32,38 @@ public class AdminController {
 
     @GetMapping("/users")
     public PageResponse<AdminUserSummaryResponse> getAllUsers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
 
-        return adminService.getAllUsers(page, size);
+            @RequestParam(defaultValue = "0") int page,
+
+            @RequestParam(defaultValue = "10") int size,
+
+            @RequestParam(defaultValue = "id") String sortBy,
+
+            @RequestParam(defaultValue = "asc") String direction) {
+
+        return adminService.getAllUsers(
+                page,
+                size,
+                sortBy,
+                direction);
     }
 
     @GetMapping("/users/pending")
     public PageResponse<AdminUserSummaryResponse> getPendingUsers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
 
-        return adminService.getPendingUsers(page, size);
+            @RequestParam(defaultValue = "0") int page,
+
+            @RequestParam(defaultValue = "10") int size,
+
+            @RequestParam(defaultValue = "id") String sortBy,
+
+            @RequestParam(defaultValue = "asc") String direction) {
+
+        return adminService.getPendingUsers(
+                page,
+                size,
+                sortBy,
+                direction);
     }
 
     @GetMapping("/users/{id}")
