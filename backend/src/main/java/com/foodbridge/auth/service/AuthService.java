@@ -10,5 +10,5 @@ public interface AuthService {
     MessageResponse register(RegisterRequest registerRequest);
 
     AuthResponse login(LoginRequest loginRequest);
-
+    
 }
