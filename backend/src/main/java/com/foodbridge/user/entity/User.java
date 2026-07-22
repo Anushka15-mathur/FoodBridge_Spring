@@ -1,14 +1,14 @@
 package com.foodbridge.user.entity;
 
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
+import com.foodbridge.common.entity.BaseEntity;
 import com.foodbridge.user.enums.AccountStatus;
 import com.foodbridge.user.enums.Role;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,11 +18,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class User {
+public class User extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Column(nullable = false, length = 100)
     private String firstName;
@@ -47,12 +44,6 @@ public class User {
     @Column(nullable = false)
     private AccountStatus status = AccountStatus.PENDING;
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
     
     @Column(nullable = false)
     private boolean profileCompleted = false;
