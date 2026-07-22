@@ -2,7 +2,10 @@ package com.foodbridge.admin.service;
 
 import com.foodbridge.admin.dto.AdminUserDetailsResponse;
 import com.foodbridge.admin.dto.AdminUserSummaryResponse;
+import com.foodbridge.admin.dto.DashboardResponse;
 import com.foodbridge.common.dto.PageResponse;
+import com.foodbridge.user.enums.AccountStatus;
+import com.foodbridge.user.enums.Role;
 
 public interface AdminService {
 
@@ -17,4 +20,21 @@ public interface AdminService {
     void rejectUser(Long id);
 
     void suspendUser(Long id);
+    
+    DashboardResponse getDashboard();
+    
+    PageResponse<AdminUserSummaryResponse> searchUsers(
+            String keyword,
+            int page,
+            int size);
+    
+    PageResponse<AdminUserSummaryResponse> filterUsersByRole(
+            Role role,
+            int page,
+            int size);
+
+    PageResponse<AdminUserSummaryResponse> filterUsersByStatus(
+            AccountStatus status,
+            int page,
+            int size);
 }

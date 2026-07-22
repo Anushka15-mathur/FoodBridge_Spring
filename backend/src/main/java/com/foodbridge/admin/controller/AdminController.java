@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.foodbridge.admin.dto.AdminUserDetailsResponse;
 import com.foodbridge.admin.dto.AdminUserSummaryResponse;
+import com.foodbridge.admin.dto.DashboardResponse;
 import com.foodbridge.admin.service.AdminService;
 import com.foodbridge.common.dto.PageResponse;
+import com.foodbridge.user.enums.AccountStatus;
+import com.foodbridge.user.enums.Role;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -66,5 +69,46 @@ public class AdminController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void suspendUser(@PathVariable Long id) {
         adminService.suspendUser(id);
+    }
+    
+    @GetMapping("/dashboard")
+    public DashboardResponse getDashboard() {
+        return adminService.getDashboard();
+    }
+    
+    @GetMapping("/users/search")
+    public PageResponse<AdminUserSummaryResponse> searchUsers(
+
+            @RequestParam String keyword,
+
+            @RequestParam(defaultValue = "0") int page,
+
+            @RequestParam(defaultValue = "10") int size) {
+
+        return adminService.searchUsers(keyword, page, size);
+    }
+    
+    @GetMapping("/users/filter/role")
+    public PageResponse<AdminUserSummaryResponse> filterUsersByRole(
+
+            @RequestParam Role role,
+
+            @RequestParam(defaultValue = "0") int page,
+
+            @RequestParam(defaultValue = "10") int size) {
+
+        return adminService.filterUsersByRole(role, page, size);
+    }
+    
+    @GetMapping("/users/filter/status")
+    public PageResponse<AdminUserSummaryResponse> filterUsersByStatus(
+
+            @RequestParam AccountStatus status,
+
+            @RequestParam(defaultValue = "0") int page,
+
+            @RequestParam(defaultValue = "10") int size) {
+
+        return adminService.filterUsersByStatus(status, page, size);
     }
 }
