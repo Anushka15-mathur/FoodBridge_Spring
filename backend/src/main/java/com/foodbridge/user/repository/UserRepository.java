@@ -8,6 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.foodbridge.user.entity.User;
 import com.foodbridge.user.enums.AccountStatus;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+
+
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
@@ -17,4 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
     boolean existsByPhone(String phone);
+    
+    Page<User> findByStatus(AccountStatus status, Pageable pageable);
+
 }
