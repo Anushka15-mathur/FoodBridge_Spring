@@ -10,16 +10,6 @@ import com.foodbridge.user.service.UserService;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Override
-    public List<UserResponse> getAllUsers() {
-
-        return List.of();
-    }
-
-    @Override
-    public UserResponse getUserById(Long id) {
-
-        return null;
-    }
+    
 
 }

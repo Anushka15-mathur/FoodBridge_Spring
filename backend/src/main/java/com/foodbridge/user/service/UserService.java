@@ -6,8 +6,5 @@ import com.foodbridge.user.dto.response.UserResponse;
 
 public interface UserService {
 
-    List<UserResponse> getAllUsers();
-
-    UserResponse getUserById(Long id);
-
+	
 }

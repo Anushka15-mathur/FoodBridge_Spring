@@ -53,4 +53,7 @@ public class User {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+    
+    @Column(nullable = false)
+    private boolean profileCompleted = false;
 }
