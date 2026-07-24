@@ -14,7 +14,13 @@ export default function NavLinks() {
         <NavLink
           key={link.name}
           to={link.path}
-          className="text-sm font-medium text-gray-700 hover:text-[#556B2F] transition-colors"
+          className={({ isActive }) =>
+            `transition-colors duration-200 font-medium ${
+              isActive
+                ? "text-[#556B2F]"
+                : "text-gray-600 hover:text-[#556B2F]"
+            }`
+          }
         >
           {link.name}
         </NavLink>
