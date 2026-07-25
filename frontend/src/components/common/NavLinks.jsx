@@ -1,30 +1,22 @@
-import { NavLink } from "react-router-dom";
-
 const links = [
-  { name: "Home", path: "/" },
-  { name: "About", path: "/about" },
-  { name: "How It Works", path: "/how-it-works" },
-  { name: "Contact", path: "/contact" },
+  { name: "Home", href: "#home" },
+  { name: "About", href: "#about" },
+  { name: "How It Works", href: "#how-it-works" },
+  { name: "Contact", href: "#contact" },
 ];
 
 export default function NavLinks() {
   return (
-    <>
+    <div className="flex items-center gap-8">
       {links.map((link) => (
-        <NavLink
+        <a
           key={link.name}
-          to={link.path}
-          className={({ isActive }) =>
-            `transition-colors duration-200 font-medium ${
-              isActive
-                ? "text-[#556B2F]"
-                : "text-gray-600 hover:text-[#556B2F]"
-            }`
-          }
+          href={link.href}
+          className="font-medium text-gray-600 transition-colors duration-300 hover:text-primary"
         >
           {link.name}
-        </NavLink>
+        </a>
       ))}
-    </>
+    </div>
   );
 }

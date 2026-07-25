@@ -9,7 +9,10 @@ import {
 
 export default function Hero() {
   return (
-    <section className="bg-background">
+    <section
+      id="home"
+      className="scroll-mt-24 bg-background py-24"
+    >
       <div className="mx-auto flex min-h-[calc(100vh-96px)] max-w-7xl flex-col items-center justify-between gap-16 px-6 py-20 lg:flex-row">
         {/* Left Section */}
         <div className="max-w-xl">
