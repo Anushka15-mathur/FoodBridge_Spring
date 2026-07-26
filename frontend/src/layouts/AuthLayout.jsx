@@ -43,7 +43,7 @@ export default function AuthLayout() {
 
           {/* Right Section */}
 
-          <div className="flex items-center justify-center px-6 py-12">
+          <div className="pt-2 flex items-center justify-center px-6 py-12">
 
             <div className="w-full max-w-md">
 
