@@ -22,39 +22,30 @@ export default function AppRoutes() {
     <BrowserRouter>
       <Routes>
 
-        {/* Public Routes */}
-        <Route element={<PublicLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/how-it-works" element={<HowItWorks />} />
+        {/* Public */}
+        <Route element={<PublicRoute />}>
+          <Route element={<PublicLayout />}>
+            <Route index element={<Landing />} />
+          </Route>
+
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+          </Route>
         </Route>
 
-        {/* Authentication Routes */}
+        {/* Registration Flow */}
         <Route element={<AuthLayout />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
           <Route path="/additional-info" element={<AdditionalInfo />} />
           <Route path="/pending-approval" element={<PendingApproval />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Route>
 
-        {/* Dashboard Routes (We'll implement these later) */}
-        <Route element={<DashboardLayout />}>
-          {/* Admin */}
-          {/* <Route path="/admin/dashboard" element={<AdminDashboard />} /> */}
-
-          {/* Restaurant */}
-          {/* <Route path="/restaurant/dashboard" element={<RestaurantDashboard />} /> */}
-
-          {/* NGO */}
-          {/* <Route path="/ngo/dashboard" element={<NgoDashboard />} /> */}
-
-          {/* Volunteer */}
-          {/* <Route path="/volunteer/dashboard" element={<VolunteerDashboard />} /> */}
-
-          {/* Donor */}
-          {/* <Route path="/donor/dashboard" element={<DonorDashboard />} /> */}
+        {/* Protected */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<DashboardLayout />}>
+            {/* Dashboard routes */}
+          </Route>
         </Route>
 
       </Routes>
