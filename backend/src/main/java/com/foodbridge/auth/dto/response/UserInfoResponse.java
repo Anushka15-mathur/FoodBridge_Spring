@@ -1,5 +1,6 @@
 package com.foodbridge.auth.dto.response;
 
+import com.foodbridge.user.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,12 +10,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthResponse {
+public class UserInfoResponse {
 
-    private String token;
+    private Long id;
 
-    private String message;
+    private String firstName;
 
-    private UserInfoResponse user;
+    private String lastName;
 
+    private String email;
+
+    private Role role;
 }

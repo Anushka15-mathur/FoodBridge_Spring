@@ -10,8 +10,13 @@ import ResendOtp from "./ResendOtp";
 
 import { otpSchema } from "../../validation/forgotPasswordSchema";
 
+import authService from "../../services/authService";
+import { toast } from "sonner";
+
 export default function OtpVerification({
     email,
+    otp,
+    setOtp,
     setStep,
 }) {
     const [loading, setLoading] = useState(false);
@@ -28,38 +33,53 @@ export default function OtpVerification({
     });
 
     const onSubmit = async (data) => {
+
         setLoading(true);
 
         try {
-            console.log(data);
 
-            // await authService.verifyOtp(email, data.otp);
+            await authService.verifyOtp(
+                email,
+                data.otp
+            );
+
+            setOtp(data.otp);
+
+            toast.success("OTP Verified Successfully");
 
             setStep(3);
 
-            // toast.success("OTP Verified");
         } catch (error) {
-            // toast.error("Invalid OTP");
-            console.error(error);
+
+            toast.error(
+                error?.response?.data?.message ||
+                "Invalid OTP"
+            );
+
         } finally {
+
             setLoading(false);
+
         }
     };
 
     const handleResend = async () => {
+
         try {
-            // await authService.resendOtp(email);
 
-            console.log("OTP Resent");
+            await authService.sendOtp(email);
 
-            // toast.success("OTP Sent Again");
+            toast.success("OTP Sent Again");
+
         } catch (error) {
-            console.error(error);
 
-            // toast.error("Unable to resend OTP");
+            toast.error(
+                error?.response?.data?.message ||
+                "Unable to resend OTP"
+            );
+
         }
     };
-
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}

@@ -13,8 +13,11 @@ import { Button } from "../ui/button";
 
 import { resetPasswordSchema } from "../../validation/forgotPasswordSchema";
 
+import authService from "../../services/authService";
+
 export default function ResetPasswordForm({
   email,
+  otp,
   setStep,
 }) {
   const [loading, setLoading] = useState(false);
@@ -32,30 +35,32 @@ export default function ResetPasswordForm({
   });
 
   const onSubmit = async (data) => {
+
     setLoading(true);
 
     try {
-      // await authService.resetPassword(
-      //     email,
-      //     data.password
-      // );
 
-      console.log({
+      await authService.resetPassword(
         email,
-        password: data.password,
-      });
+        otp,
+        data.password
+      );
 
       toast.success("Password updated successfully.");
 
       setStep(4);
 
     } catch (error) {
-      console.error(error);
 
-      toast.error("Unable to reset password.");
+      toast.error(
+        error?.response?.data?.message ||
+        "Unable to reset password."
+      );
 
     } finally {
+
       setLoading(false);
+
     }
   };
 
