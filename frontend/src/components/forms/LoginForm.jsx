@@ -1,3 +1,7 @@
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
+import useAuth from "../../hooks/useAuth";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +16,11 @@ import PasswordInput from "../auth/PasswordInput";
 import { loginSchema } from "../../validation/authSchema";
 
 export default function LoginForm() {
+
+    const navigate = useNavigate();
+
+    const { login } = useAuth();
+
     const {
         register,
         handleSubmit,
@@ -26,9 +35,32 @@ export default function LoginForm() {
     });
 
     const onSubmit = async (data) => {
-        console.log(data);
+        try {
 
-        // We'll connect the Spring Boot API next.
+            const response = await login({
+                email: data.email,
+                password: data.password,
+            });
+
+            if (!response.token) {
+                toast.error(response.message);
+                return;
+            }
+
+            toast.success(response.message);
+
+            navigate("/dashboard");
+
+        } catch (error) {
+
+            const message =
+                error.response?.data?.message ||
+                "Login failed. Please try again.";
+
+            toast.error(message);
+
+            console.error(error);
+        }
     };
 
     return (

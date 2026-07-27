@@ -1,57 +1,58 @@
-import { createContext, useEffect, useMemo, useState } from "react";
+import { createContext, useEffect, useState } from "react";
+import authService from "../services/authService";
+import { getToken, setToken, removeToken } from "../utils/token";
+import { setAuthToken } from "../services/api";
 
-export const AuthContext = createContext(null);
+export const AuthContext = createContext();
 
-export default function AuthProvider({ children }) {
-  const [token, setToken] = useState(
-    localStorage.getItem("token") || null
-  );
+export function AuthProvider({ children }) {
+    const [token, setTokenState] = useState(getToken());
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("user");
-    return saved ? JSON.parse(saved) : null;
-  });
+    useEffect(() => {
+        const storedToken = getToken();
 
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
-    } else {
-      localStorage.removeItem("token");
-    }
-  }, [token]);
+        if (storedToken) {
+            setAuthToken(storedToken);
+            setTokenState(storedToken);
+        }
 
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("user");
-    }
-  }, [user]);
+        setLoading(false);
+    }, []);
 
-  const login = ({ token, user }) => {
-    setToken(token);
-    setUser(user);
-  };
+    const login = async (credentials) => {
+        const response = await authService.login(credentials);
 
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-  };
+        if (response.token) {
+            setToken(response.token);
+            setAuthToken(response.token);
+            setTokenState(response.token);
+            setUser(response.user);
+        }
 
-  const value = useMemo(
-    () => ({
-      token,
-      user,
-      isAuthenticated: !!token,
-      login,
-      logout,
-    }),
-    [token, user]
-  );
+        return response;
+    };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+    const logout = () => {
+        removeToken();
+        setAuthToken(null);
+        setTokenState(null);
+        setUser(null);
+    };
+
+    const value = {
+        token,
+        user,
+        login,
+        logout,
+        loading,
+        isAuthenticated: !!token,
+    };
+
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
 }

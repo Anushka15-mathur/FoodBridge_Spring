@@ -13,6 +13,7 @@ import { Input } from "../ui/input";
 import AuthHeader from "./AuthHeader";
 
 import { emailSchema } from "../../validation/forgotPasswordSchema";
+import authService from "../../services/authService";
 
 export default function ForgotPasswordEmail({
     setStep,
@@ -38,9 +39,7 @@ export default function ForgotPasswordEmail({
 
         try {
 
-            // await authService.sendOtp(data.email);
-
-            console.log(data);
+            await authService.sendOtp(data.email);
 
             setEmail(data.email);
 
@@ -52,7 +51,10 @@ export default function ForgotPasswordEmail({
 
             console.error(error);
 
-            toast.error("Unable to send OTP.");
+            toast.error(
+                error?.response?.data?.message ||
+                "Unable to send OTP."
+            );
 
         } finally {
 

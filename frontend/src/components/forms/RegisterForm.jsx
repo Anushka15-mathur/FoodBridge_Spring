@@ -1,4 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+import { toast } from "sonner";
+import authService from "../../services/authService";
+
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -13,6 +17,9 @@ import RoleSelector from "../auth/RoleSelector";
 import { registerSchema } from "../../validation/authSchema";
 
 export default function RegisterForm() {
+
+  const navigate = useNavigate();
+
   const {
     register,
     control,
@@ -31,11 +38,41 @@ export default function RegisterForm() {
     },
   });
 
-  const onSubmit = async (data) => {
-    console.log(data);
+ const onSubmit = async (data) => {
 
-    // Backend integration later
-  };
+    try {
+
+        const payload = {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            phone: data.phone,
+            password: data.password,
+            role: data.role,
+        };
+
+        const response = await authService.register(payload);
+
+        toast.success(response.message);
+
+        navigate("/additional-info", {
+            state: {
+                email: data.email,
+                role: data.role,
+            },
+        });
+
+    } catch (error) {
+
+        const message =
+            error.response?.data?.message ||
+            "Registration failed. Please try again.";
+
+        toast.error(message);
+
+        console.error(error);
+    }
+};
 
   return (
     <Card className="border-none shadow-none">
