@@ -22,30 +22,26 @@ export default function AppRoutes() {
     <BrowserRouter>
       <Routes>
 
-        {/* Public */}
-        <Route element={<PublicRoute />}>
-          <Route element={<PublicLayout />}>
-            <Route index element={<Landing />} />
-          </Route>
-
-          <Route element={<AuthLayout />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-          </Route>
+        {/* Public Pages */}
+        <Route element={<PublicLayout />}>
+          <Route index element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
         </Route>
 
-        {/* Registration Flow */}
+        {/* Auth Pages */}
         <Route element={<AuthLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/additional-info" element={<AdditionalInfo />} />
           <Route path="/pending-approval" element={<PendingApproval />} />
         </Route>
 
-        {/* Protected */}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<DashboardLayout />}>
-            {/* Dashboard routes */}
-          </Route>
+        {/* Dashboard */}
+        <Route element={<DashboardLayout />}>
+          {/* Dashboard routes yaha add honge */}
         </Route>
 
       </Routes>
