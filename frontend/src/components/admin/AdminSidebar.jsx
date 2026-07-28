@@ -1,10 +1,13 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Clock3,
   Users,
   LogOut,
 } from "lucide-react";
+
+import { toast } from "sonner";
+import useAuth from "../../hooks/useAuth";
 
 const menuItems = [
   {
@@ -25,6 +28,21 @@ const menuItems = [
 ];
 
 export default function AdminSidebar() {
+
+  const navigate = useNavigate();
+
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+
+    logout();
+
+    toast.success("Logged out successfully");
+
+    navigate("/login", { replace: true });
+
+  };
+
   return (
     <aside className="flex h-screen w-64 flex-col border-r bg-card">
 
@@ -65,7 +83,10 @@ export default function AdminSidebar() {
 
       <div className="border-t p-4">
 
-        <button className="flex w-full items-center gap-3 rounded-lg px-4 py-3 hover:bg-muted">
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-lg px-4 py-3 hover:bg-muted"
+        >
           <LogOut size={20} />
           Logout
         </button>
