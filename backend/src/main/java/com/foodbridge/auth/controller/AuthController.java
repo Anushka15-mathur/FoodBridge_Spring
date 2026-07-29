@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import com.foodbridge.auth.dto.request.LoginRequest;
 import com.foodbridge.auth.dto.request.RegisterRequest;
 import com.foodbridge.auth.dto.response.AuthResponse;
+import com.foodbridge.user.dto.response.UserResponse;
 import com.foodbridge.auth.dto.response.MessageResponse;
 import com.foodbridge.auth.service.AuthService;
 import com.foodbridge.auth.dto.request.ForgotPasswordRequest;
@@ -25,7 +26,7 @@ public class AuthController {
         private final AuthService authService;
 
         @PostMapping("/register")
-        public ResponseEntity<MessageResponse> register(
+        public ResponseEntity<AuthResponse> register(
                         @Valid @RequestBody RegisterRequest request) {
 
                 return new ResponseEntity<>(
@@ -62,5 +63,10 @@ public class AuthController {
 
                 return ResponseEntity.ok(
                                 authService.resetPassword(request));
+        }
+
+        @GetMapping("/me")
+        public ResponseEntity<UserResponse> getCurrentUser() {
+                return ResponseEntity.ok(authService.getCurrentUser());
         }
 }

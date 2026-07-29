@@ -11,20 +11,52 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storedToken = getToken();
 
-        if (storedToken) {
-            setAuthToken(storedToken);
-            setTokenState(storedToken);
-        }
+        const restoreSession = async () => {
 
-        setLoading(false);
+            const storedToken = getToken();
+
+            if (!storedToken) {
+                setLoading(false);
+                return;
+            }
+
+            try {
+
+                setAuthToken(storedToken);
+                setTokenState(storedToken);
+
+                const currentUser = await authService.getCurrentUser();
+
+                setUser(currentUser);
+
+            } catch (error) {
+
+                removeToken();
+                setAuthToken(null);
+                setTokenState(null);
+                setUser(null);
+
+            } finally {
+
+                setLoading(false);
+
+            }
+        };
+
+        restoreSession();
+
     }, []);
 
     const login = async (credentials) => {
+
         const response = await authService.login(credentials);
 
+        console.log("Login Response:", response);
+        console.log("Token:", response.token);
+
         if (response.token) {
+
             setToken(response.token);
             setAuthToken(response.token);
             setTokenState(response.token);

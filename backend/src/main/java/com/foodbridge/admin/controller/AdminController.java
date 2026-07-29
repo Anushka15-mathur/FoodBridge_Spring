@@ -131,4 +131,25 @@ public class AdminController {
 
         return adminService.filterUsersByStatus(status, page, size);
     }
+
+    @GetMapping("/users/filter")
+public PageResponse<AdminUserSummaryResponse> filterUsers(
+
+        @RequestParam(required = false) String keyword,
+
+        @RequestParam(required = false) Role role,
+
+        @RequestParam(required = false) AccountStatus status,
+
+        @RequestParam(defaultValue = "0") int page,
+
+        @RequestParam(defaultValue = "10") int size) {
+
+    return adminService.filterUsers(
+            keyword,
+            role,
+            status,
+            page,
+            size);
+}
 }

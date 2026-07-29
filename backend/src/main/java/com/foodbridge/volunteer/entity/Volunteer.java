@@ -32,12 +32,12 @@ public class Volunteer extends BaseEntity {
     @Builder.Default
     private Boolean verified = false;
 
-    @Column(nullable = false)
+    @Column
     @DecimalMin(value = "-90.0")
     @DecimalMax(value = "90.0")
     private Double currentLatitude;
 
-    @Column(nullable = false)
+    @Column
     @DecimalMin(value = "-180.0")
     @DecimalMax(value = "180.0")
     private Double currentLongitude;
@@ -50,4 +50,10 @@ public class Volunteer extends BaseEntity {
     @Column(nullable = false)
     @Builder.Default
     private Boolean isDeleted = false;
+
+    @Column(length = 255)
+    private String drivingLicensePath;
+
+    @Column(length = 255)
+    private String identityProofPath;
 }

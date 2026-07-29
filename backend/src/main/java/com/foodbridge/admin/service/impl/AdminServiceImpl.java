@@ -26,168 +26,190 @@ import lombok.RequiredArgsConstructor;
 public class AdminServiceImpl implements AdminService {
 
 	private final UserRepository userRepository;
-	
+
 	private final AdminMapper adminMapper;
-	
+
 	@Override
 	public PageResponse<AdminUserSummaryResponse> getAllUsers(
-	        int page,
-	        int size,
-	        String sortBy,
-	        String direction) {
+			int page,
+			int size,
+			String sortBy,
+			String direction) {
 
-	    Sort sort = direction.equalsIgnoreCase("desc")
-	            ? Sort.by(sortBy).descending()
-	            : Sort.by(sortBy).ascending();
+		Sort sort = direction.equalsIgnoreCase("desc")
+				? Sort.by(sortBy).descending()
+				: Sort.by(sortBy).ascending();
 
-	    Pageable pageable = PageRequest.of(page, size, sort);
+		Pageable pageable = PageRequest.of(page, size, sort);
 
-	    Page<User> userPage = userRepository.findAll(pageable);
+		Page<User> userPage = userRepository.findAll(pageable);
 
-	    return PageResponseUtil.toPageResponse(
-	            userPage,
-	            adminMapper.toSummaryResponseList(userPage.getContent()));
+		return PageResponseUtil.toPageResponse(
+				userPage,
+				adminMapper.toSummaryResponseList(userPage.getContent()));
 	}
 
 	@Override
 	public AdminUserDetailsResponse getUserById(Long id) {
 
-	    User user = userRepository.findById(id)
-	            .orElseThrow(() ->
-	                    new ResourceNotFoundException(
-	                            "User not found with id : " + id));
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException(
+						"User not found with id : " + id));
 
-	    return adminMapper.toDetailsResponse(user);
+		return adminMapper.toDetailsResponse(user);
 	}
+
 	@Override
 	public PageResponse<AdminUserSummaryResponse> getPendingUsers(
-	        int page,
-	        int size,
-	        String sortBy,
-	        String direction) {
+			int page,
+			int size,
+			String sortBy,
+			String direction) {
 
-	    Sort sort = direction.equalsIgnoreCase("desc")
-	            ? Sort.by(sortBy).descending()
-	            : Sort.by(sortBy).ascending();
+		Sort sort = direction.equalsIgnoreCase("desc")
+				? Sort.by(sortBy).descending()
+				: Sort.by(sortBy).ascending();
 
-	    Pageable pageable = PageRequest.of(page, size, sort);
+		Pageable pageable = PageRequest.of(page, size, sort);
 
-	    Page<User> userPage =
-	            userRepository.findByStatus(AccountStatus.PENDING, pageable);
+		Page<User> userPage = userRepository.findByStatus(AccountStatus.PENDING, pageable);
 
-	    return PageResponseUtil.toPageResponse(
-	            userPage,
-	            adminMapper.toSummaryResponseList(userPage.getContent()));
+		return PageResponseUtil.toPageResponse(
+				userPage,
+				adminMapper.toSummaryResponseList(userPage.getContent()));
 	}
-	
-	
+
 	@Override
 	public void approveUser(Long id) {
-	    updateUserStatus(id, AccountStatus.APPROVED);
+		updateUserStatus(id, AccountStatus.APPROVED);
 	}
 
 	@Override
 	public void rejectUser(Long id) {
-	    updateUserStatus(id, AccountStatus.REJECTED);
+		updateUserStatus(id, AccountStatus.REJECTED);
 	}
 
 	@Override
 	public void suspendUser(Long id) {
-	    updateUserStatus(id, AccountStatus.SUSPENDED);
+		updateUserStatus(id, AccountStatus.SUSPENDED);
 	}
-	
+
 	@Override
 	public DashboardResponse getDashboard() {
 
-	    return DashboardResponse.builder()
+		return DashboardResponse.builder()
 
-	            .totalUsers(userRepository.count())
+				.totalUsers(userRepository.count())
 
-	            .pendingUsers(userRepository.countByStatus(AccountStatus.PENDING))
+				.pendingUsers(userRepository.countByStatus(AccountStatus.PENDING))
 
-	            .approvedUsers(userRepository.countByStatus(AccountStatus.APPROVED))
+				.approvedUsers(userRepository.countByStatus(AccountStatus.APPROVED))
 
-	            .rejectedUsers(userRepository.countByStatus(AccountStatus.REJECTED))
+				.rejectedUsers(userRepository.countByStatus(AccountStatus.REJECTED))
 
-	            .suspendedUsers(userRepository.countByStatus(AccountStatus.SUSPENDED))
+				.suspendedUsers(userRepository.countByStatus(AccountStatus.SUSPENDED))
 
-	            .totalAdmins(userRepository.countByRole(Role.ADMIN))
+				.totalAdmins(userRepository.countByRole(Role.ADMIN))
 
-	            .totalRestaurants(userRepository.countByRole(Role.RESTAURANT))
+				.totalRestaurants(userRepository.countByRole(Role.RESTAURANT))
 
-	            .totalNGOs(userRepository.countByRole(Role.NGO))
+				.totalNGOs(userRepository.countByRole(Role.NGO))
 
-	            .totalDonors(userRepository.countByRole(Role.DONOR))
+				.totalDonors(userRepository.countByRole(Role.DONOR))
 
-	            .totalVolunteers(userRepository.countByRole(Role.VOLUNTEER))
+				.totalVolunteers(userRepository.countByRole(Role.VOLUNTEER))
 
-	            .build();
+				.build();
 	}
-	
+
 	@Override
 	public PageResponse<AdminUserSummaryResponse> searchUsers(
-	        String keyword,
-	        int page,
-	        int size) {
+			String keyword,
+			int page,
+			int size) {
 
-	    Pageable pageable = PageRequest.of(page, size);
+		Pageable pageable = PageRequest.of(page, size);
 
-	    Page<User> userPage =
-	            userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-	                    keyword,
-	                    keyword,
-	                    pageable);
+		Page<User> userPage = userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+				keyword,
+				keyword,
+				pageable);
 
-	    return PageResponseUtil.toPageResponse(
-	            userPage,
-	            adminMapper.toSummaryResponseList(userPage.getContent())
-	    );
+		return PageResponseUtil.toPageResponse(
+				userPage,
+				adminMapper.toSummaryResponseList(userPage.getContent()));
 	}
-	
+
 	@Override
 	public PageResponse<AdminUserSummaryResponse> filterUsersByRole(
-	        Role role,
-	        int page,
-	        int size) {
+			Role role,
+			int page,
+			int size) {
 
-	    Pageable pageable = PageRequest.of(page, size);
+		Pageable pageable = PageRequest.of(page, size);
 
-	    Page<User> userPage =
-	            userRepository.findByRole(role, pageable);
+		Page<User> userPage = userRepository.findByRole(role, pageable);
 
-	    return PageResponseUtil.toPageResponse(
-	            userPage,
-	            adminMapper.toSummaryResponseList(userPage.getContent())
-	    );
+		return PageResponseUtil.toPageResponse(
+				userPage,
+				adminMapper.toSummaryResponseList(userPage.getContent()));
 	}
-	
+
 	@Override
 	public PageResponse<AdminUserSummaryResponse> filterUsersByStatus(
-	        AccountStatus status,
-	        int page,
-	        int size) {
+			AccountStatus status,
+			int page,
+			int size) {
 
-	    Pageable pageable = PageRequest.of(page, size);
+		Pageable pageable = PageRequest.of(page, size);
 
-	    Page<User> userPage =
-	            userRepository.findByStatus(status, pageable);
+		Page<User> userPage = userRepository.findByStatus(status, pageable);
 
-	    return PageResponseUtil.toPageResponse(
-	            userPage,
-	            adminMapper.toSummaryResponseList(userPage.getContent())
-	    );
+		return PageResponseUtil.toPageResponse(
+				userPage,
+				adminMapper.toSummaryResponseList(userPage.getContent()));
 	}
-	
+
 	private void updateUserStatus(Long id, AccountStatus status) {
 
-	    User user = userRepository.findById(id)
-	            .orElseThrow(() ->
-	                    new ResourceNotFoundException(
-	                            "User not found with id: " + id));
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException(
+						"User not found with id: " + id));
 
-	    user.setStatus(status);
+		user.setStatus(status);
 
-	    userRepository.save(user);
+		userRepository.save(user);
 	}
-	
+
+	@Override
+	public PageResponse<AdminUserSummaryResponse> filterUsers(
+
+			String keyword,
+
+			Role role,
+
+			AccountStatus status,
+
+			int page,
+
+			int size) {
+
+		Pageable pageable = PageRequest.of(page, size);
+
+		// Treat empty string as null
+		if (keyword != null && keyword.isBlank()) {
+			keyword = null;
+		}
+
+		Page<User> userPage = userRepository.filterUsers(
+				keyword,
+				role,
+				status,
+				pageable);
+
+		return PageResponseUtil.toPageResponse(
+				userPage,
+				adminMapper.toSummaryResponseList(userPage.getContent()));
+	}
+
 }
