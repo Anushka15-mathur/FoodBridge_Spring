@@ -19,6 +19,10 @@ import com.foodbridge.user.entity.User;
 import com.foodbridge.user.enums.AccountStatus;
 import com.foodbridge.user.repository.UserRepository;
 import com.foodbridge.exception.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.foodbridge.user.dto.response.UserResponse;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -49,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
         private static final SecureRandom RANDOM = new SecureRandom();
 
         @Override
-        public MessageResponse register(RegisterRequest request) {
+        public AuthResponse register(RegisterRequest request) {
 
                 if (userRepository.existsByEmail(request.getEmail())) {
                         throw new DuplicateResourceException("Email already exists.");
@@ -76,8 +80,22 @@ public class AuthServiceImpl implements AuthService {
 
                 userRepository.save(user);
 
-                return new MessageResponse(
-                                "Registration successful. Waiting for admin approval.");
+                String token = jwtService.generateToken(
+        new CustomUserDetails(user));
+
+UserInfoResponse userInfo = UserInfoResponse.builder()
+        .id(user.getId())
+        .firstName(user.getFirstName())
+        .lastName(user.getLastName())
+        .email(user.getEmail())
+        .role(user.getRole())
+        .build();
+
+return AuthResponse.builder()
+        .token(token)
+        .message("Registration successful. Please complete your profile.")
+        .user(userInfo)
+        .build();
         }
 
         @Override
@@ -207,6 +225,29 @@ public class AuthServiceImpl implements AuthService {
 
                 return new MessageResponse(
                                 "Password reset successful.");
+        }
+
+        @Override
+        public UserResponse getCurrentUser() {
+
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+                CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+                User user = userRepository.findByEmail(userDetails.getUsername())
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+                UserResponse response = new UserResponse();
+
+                response.setId(user.getId());
+                response.setFirstName(user.getFirstName());
+                response.setLastName(user.getLastName());
+                response.setEmail(user.getEmail());
+                response.setPhone(user.getPhone());
+                response.setRole(user.getRole());
+                response.setStatus(user.getStatus());
+
+                return response;
         }
 
 }

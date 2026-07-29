@@ -41,4 +41,7 @@ public class Donor extends BaseEntity {
     @Column(nullable = false)
     @Builder.Default
     private Boolean isDeleted = false;
+
+    @Column(length = 255)
+    private String organizationProofPath;
 }

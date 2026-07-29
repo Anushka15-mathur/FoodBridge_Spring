@@ -6,13 +6,16 @@ import com.foodbridge.auth.dto.request.RegisterRequest;
 import com.foodbridge.auth.dto.request.ResetPasswordRequest;
 import com.foodbridge.auth.dto.request.VerifyOtpRequest;
 import com.foodbridge.auth.dto.response.AuthResponse;
+import com.foodbridge.user.dto.response.UserResponse;
 import com.foodbridge.auth.dto.response.MessageResponse;
 
 public interface AuthService {
 
-    MessageResponse register(RegisterRequest registerRequest);
+    AuthResponse register(RegisterRequest request);
 
     AuthResponse login(LoginRequest loginRequest);
+
+    UserResponse getCurrentUser();
 
     MessageResponse forgotPassword(ForgotPasswordRequest request);
 

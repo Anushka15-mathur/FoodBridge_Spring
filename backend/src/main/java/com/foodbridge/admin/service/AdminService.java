@@ -9,40 +9,47 @@ import com.foodbridge.user.enums.Role;
 
 public interface AdminService {
 
-	PageResponse<AdminUserSummaryResponse> getAllUsers(
-	        int page,
-	        int size,
-	        String sortBy,
-	        String direction);
+        PageResponse<AdminUserSummaryResponse> getAllUsers(
+                        int page,
+                        int size,
+                        String sortBy,
+                        String direction);
 
-    AdminUserDetailsResponse getUserById(Long id);
+        AdminUserDetailsResponse getUserById(Long id);
 
-    PageResponse<AdminUserSummaryResponse> getPendingUsers(
-            int page,
-            int size,
-            String sortBy,
-            String direction);
+        PageResponse<AdminUserSummaryResponse> getPendingUsers(
+                        int page,
+                        int size,
+                        String sortBy,
+                        String direction);
 
-    void approveUser(Long id);
+        void approveUser(Long id);
 
-    void rejectUser(Long id);
+        void rejectUser(Long id);
 
-    void suspendUser(Long id);
-    
-    DashboardResponse getDashboard();
-    
-    PageResponse<AdminUserSummaryResponse> searchUsers(
-            String keyword,
-            int page,
-            int size);
-    
-    PageResponse<AdminUserSummaryResponse> filterUsersByRole(
-            Role role,
-            int page,
-            int size);
+        void suspendUser(Long id);
 
-    PageResponse<AdminUserSummaryResponse> filterUsersByStatus(
-            AccountStatus status,
-            int page,
-            int size);
+        DashboardResponse getDashboard();
+
+        PageResponse<AdminUserSummaryResponse> searchUsers(
+                        String keyword,
+                        int page,
+                        int size);
+
+        PageResponse<AdminUserSummaryResponse> filterUsersByRole(
+                        Role role,
+                        int page,
+                        int size);
+
+        PageResponse<AdminUserSummaryResponse> filterUsersByStatus(
+                        AccountStatus status,
+                        int page,
+                        int size);
+
+        PageResponse<AdminUserSummaryResponse> filterUsers(
+                        String keyword,
+                        Role role,
+                        AccountStatus status,
+                        int page,
+                        int size);
 }
