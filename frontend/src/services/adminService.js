@@ -53,19 +53,19 @@ const adminService = {
   },
 
   approveUser: async (id) => {
-  const response = await api.put(`/admin/users/${id}/approve`);
-  return response.data;
-},
+    const response = await api.put(`/admin/users/${id}/approve`);
+    return response.data;
+  },
 
-rejectUser: async (id) => {
-  const response = await api.put(`/admin/users/${id}/reject`);
-  return response.data;
-},
+  rejectUser: async (id) => {
+    const response = await api.put(`/admin/users/${id}/reject`);
+    return response.data;
+  },
 
-suspendUser: async (id) => {
-  const response = await api.put(`/admin/users/${id}/suspend`);
-  return response.data;
-},
+  suspendUser: async (id) => {
+    const response = await api.put(`/admin/users/${id}/suspend`);
+    return response.data;
+  },
 
   searchUsers: async (
     keyword,
@@ -113,6 +113,38 @@ suspendUser: async (id) => {
         page,
         size,
       },
+    });
+
+    return response.data;
+  },
+
+  filterUsers: async ({
+    keyword = "",
+    role = "",
+    status = "",
+    page = 0,
+    size = 10,
+  }) => {
+
+    const params = {};
+
+    if (keyword.trim()) {
+      params.keyword = keyword.trim();
+    }
+
+    if (role && role !== "ALL") {
+      params.role = role;
+    }
+
+    if (status && status !== "ALL") {
+      params.status = status;
+    }
+
+    params.page = page;
+    params.size = size;
+
+    const response = await api.get("/admin/users/filter", {
+      params,
     });
 
     return response.data;

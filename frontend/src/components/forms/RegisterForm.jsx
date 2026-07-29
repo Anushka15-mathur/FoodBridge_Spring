@@ -2,6 +2,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { toast } from "sonner";
 import authService from "../../services/authService";
+import { setToken } from "../../utils/token";
+import { setAuthToken } from "../../services/api";
 
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,41 +40,44 @@ export default function RegisterForm() {
     },
   });
 
- const onSubmit = async (data) => {
+  const onSubmit = async (data) => {
 
     try {
 
-        const payload = {
-            firstName: data.firstName,
-            lastName: data.lastName,
-            email: data.email,
-            phone: data.phone,
-            password: data.password,
-            role: data.role,
-        };
+      const payload = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        password: data.password,
+        role: data.role,
+      };
 
-        const response = await authService.register(payload);
+      const response = await authService.register(payload);
 
-        toast.success(response.message);
+      setToken(response.token);
+      setAuthToken(response.token);
 
-        navigate("/additional-info", {
-            state: {
-                email: data.email,
-                role: data.role,
-            },
-        });
+      toast.success(response.message);
+
+      navigate("/additional-info", {
+        state: {
+          email: data.email,
+          role: data.role,
+        },
+      });
 
     } catch (error) {
 
-        const message =
-            error.response?.data?.message ||
-            "Registration failed. Please try again.";
+      const message =
+        error.response?.data?.message ||
+        "Registration failed. Please try again.";
 
-        toast.error(message);
+      toast.error(message);
 
-        console.error(error);
+      console.error(error);
     }
-};
+  };
 
   return (
     <Card className="border-none shadow-none">

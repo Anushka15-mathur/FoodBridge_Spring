@@ -35,12 +35,12 @@ public class Ngo extends BaseEntity {
     @NotBlank(message = "Address is required")
     private String address;
 
-    @Column(nullable = false)
+    @Column
     @DecimalMin(value = "-90.0")
     @DecimalMax(value = "90.0")
     private Double latitude;
 
-    @Column(nullable = false)
+    @Column
     @DecimalMin(value = "-180.0")
     @DecimalMax(value = "180.0")
     private Double longitude;
@@ -60,4 +60,10 @@ public class Ngo extends BaseEntity {
     @Column(nullable = false)
     @Builder.Default
     private Boolean isDeleted = false;
+
+    @Column(length = 255)
+    private String logoPath;
+
+    @Column(length = 255)
+    private String registrationCertificatePath;
 }

@@ -1,3 +1,4 @@
+import { useForm } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
@@ -5,42 +6,105 @@ import AddressFields from "../common/AddressFields";
 import FileUpload from "../common/FileUpload";
 import FormSection from "../common/FormSection";
 
-export default function NGOForm() {
-  return (
-    <form className="space-y-8">
+export default function NGOForm({ onSubmit }) {
 
-      <FormSection
-        title="NGO Information"
-        description="Provide your organization details."
-      >
-        <Input placeholder="NGO Name" />
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm();
 
-        <Input placeholder="Registration Number" />
+    return (
+        <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-8"
+        >
 
-        <Input placeholder="NGO Type" />
+            <FormSection
+                title="NGO Information"
+                description="Provide your organization details."
+            >
 
-        <Input placeholder="Contact Person" />
-      </FormSection>
+                <Input
+                    placeholder="NGO Name"
+                    {...register("ngoName", {
+                        required: "NGO name is required",
+                    })}
+                />
 
-      <FormSection
-        title="Address"
-      >
-        <AddressFields />
-      </FormSection>
+                {errors.ngoName && (
+                    <p className="text-sm text-red-500">
+                        {errors.ngoName.message}
+                    </p>
+                )}
 
-      <FormSection
-        title="Documents"
-      >
-        <FileUpload
-          label="Registration Certificate"
-          accept=".pdf,image/*"
-        />
-      </FormSection>
+                <Input
+                    placeholder="Registration Number"
+                    {...register("registrationNumber")}
+                />
 
-      <Button className="w-full bg-primary text-white">
-        Save & Continue
-      </Button>
+                {errors.registrationNumber && (
+                    <p className="text-sm text-red-500">
+                        {errors.registrationNumber.message}
+                    </p>
+                )}
 
-    </form>
-  );
+                
+            </FormSection>
+
+            <FormSection title="Address">
+
+                <AddressFields
+                    register={register}
+                    errors={errors}
+                />
+
+            </FormSection>
+
+            <FormSection title="Documents">
+
+                <FileUpload
+                    label="NGO Logo"
+                    name="logo"
+                    accept=".jpg,.jpeg,.png"
+                    register={register}
+                    error={errors.logo}
+                />
+
+                <FileUpload
+                    label="Registration Certificate"
+                    name="registrationCertificate"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    register={register}
+                    required
+                    error={errors.registrationCertificate}
+                />
+
+            </FormSection>
+
+            <Input
+                type="number"
+                placeholder="Operating Radius (km)"
+                {...register("operatingRadius", {
+                    required: "Operating radius is required",
+                    valueAsNumber: true,
+                    min: 1,
+                })}
+            />
+
+            {errors.operatingRadius && (
+                <p className="text-sm text-red-500">
+                    {errors.operatingRadius.message}
+                </p>
+            )}
+
+            <Button
+                type="submit"
+                className="w-full bg-primary text-white hover:bg-primary/90"
+            >
+                Save & Continue
+            </Button>
+
+        </form>
+    );
 }

@@ -12,6 +12,7 @@ import {
   SheetTitle,
 } from "../ui/sheet";
 
+import { Badge } from "../ui/badge";
 import { Skeleton } from "../ui/skeleton";
 
 export default function UserDetailsSheet({
@@ -131,19 +132,15 @@ export default function UserDetailsSheet({
             <InfoRow
               label="Profile Completed"
               value={
-                user.profileCompleted
-                  ? "Yes"
-                  : "No"
-              }
-            /><InfoRow
-              label="Profile Completed"
-              value={
                 user.profileCompleted ? (
-                  <Badge className="bg-green-600">
+                  <Badge className="bg-green-100 text-green-700 border border-green-300">
                     Completed
                   </Badge>
                 ) : (
-                  <Badge variant="destructive">
+                  <Badge
+                    variant="outline"
+                    className="border-red-300 text-red-600"
+                  >
                     Incomplete
                   </Badge>
                 )

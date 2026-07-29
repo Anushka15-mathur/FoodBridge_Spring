@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.foodbridge.user.entity.User;
+import com.foodbridge.user.enums.AccountStatus;
 
 public class CustomUserDetails implements UserDetails {
 
@@ -25,8 +26,7 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
         return List.of(
-                new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
-        );
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
     }
 
     @Override
@@ -56,7 +56,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-
-        return user.getStatus().name().equals("APPROVED");
+        return user.getStatus() != AccountStatus.REJECTED
+                && user.getStatus() != AccountStatus.SUSPENDED;
     }
 }
