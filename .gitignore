@@ -17,3 +17,6 @@ frontend/dist/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Visual Studio
+.vs/
