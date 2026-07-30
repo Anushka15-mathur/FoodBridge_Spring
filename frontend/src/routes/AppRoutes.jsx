@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PublicLayout from "../layouts/PublicLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import AdminLayout from "../layouts/AdminLayout";
+import RestaurantLayout from "../layouts/RestaurantLayout";
 
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
@@ -24,6 +25,12 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import Dashboard from "../pages/admin/Dashboard";
 import PendingUsers from "../pages/admin/PendingUsers";
 import AllUsers from "../pages/admin/AllUsers";
+
+// Restaurant Pages
+import Profile from "../pages/Restaurant/Profile";
+import AddDonation from "../pages/Restaurant/AddDonation";
+import DonationHistory from "../pages/Restaurant/DonationHistory";
+import DonationDetails from "../pages/Restaurant/DonationDetails";
 
 export default function AppRoutes() {
   return (
@@ -59,6 +66,16 @@ export default function AppRoutes() {
             <Route path="/admin/dashboard" element={<Dashboard />} />
             <Route path="/admin/pending-users" element={<PendingUsers />} />
             <Route path="/admin/users" element={<AllUsers />} />
+          </Route>
+        </Route>
+
+        {/* Protected Restaurant Routes */}
+        <Route element={<ProtectedRoute allowedRoles={["RESTAURANT"]} />}>
+          <Route element={<RestaurantLayout />}>
+            <Route path="/restaurant/profile" element={<Profile />} />
+            <Route path="/restaurant/add-donation" element={<AddDonation />} />
+            <Route path="/restaurant/donations" element={<DonationHistory />} />
+            <Route path="/restaurant/donations/:id" element={<DonationDetails />} />
           </Route>
         </Route>
 

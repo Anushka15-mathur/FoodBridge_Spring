@@ -13,11 +13,15 @@ export default function PublicRoute() {
         return null;
     }
 
-    // Only bounce ADMIN users to the admin dashboard.
+    // Only bounce roles that have a real dashboard built.
     // Other roles don't have their own dashboard yet, so let
     // them keep browsing the public site instead of looping.
     if (isAuthenticated && user?.role === "ADMIN") {
         return <Navigate to="/admin/dashboard" replace />;
+    }
+
+    if (isAuthenticated && user?.role === "RESTAURANT") {
+        return <Navigate to="/restaurant/profile" replace />;
     }
 
     return <Outlet />;
