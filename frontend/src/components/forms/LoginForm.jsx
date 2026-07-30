@@ -49,7 +49,13 @@ export default function LoginForm() {
 
             toast.success(response.message);
 
-            navigate("/dashboard");
+            if (response.user?.role === "ADMIN") {
+                navigate("/admin/dashboard");
+            } else {
+                // Dashboards for other roles aren't built yet,
+                // send them back to the home page for now.
+                navigate("/");
+            }
 
         } catch (error) {
 
