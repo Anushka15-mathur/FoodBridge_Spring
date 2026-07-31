@@ -13,6 +13,8 @@ import com.foodbridge.ngo.dto.DonationCardResponse;
 import com.foodbridge.ngo.dto.DonationRequestDto;
 import jakarta.validation.Valid;
 
+import com.foodbridge.ngo.dto.MyDonationRequestResponse;
+
 @RestController
 @RequestMapping("/api/ngo")
 public class NgoController {
@@ -37,5 +39,12 @@ public class NgoController {
 
         return ResponseEntity.ok(
             ngoService.requestDonation(donationId, request));
+    }
+
+    @GetMapping("/requests")
+    public ResponseEntity<List<MyDonationRequestResponse>> getMyDonationRequests() {
+
+    return ResponseEntity.ok(
+            ngoService.getMyDonationRequests());
     }
 }

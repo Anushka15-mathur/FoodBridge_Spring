@@ -28,6 +28,9 @@ import java.math.BigDecimal;
 import com.foodbridge.allocation.entity.DonationRequest;
 import com.foodbridge.ngo.dto.DonationRequestDto;
 
+import com.foodbridge.allocation.entity.DonationRequest;
+import com.foodbridge.ngo.dto.MyDonationRequestResponse;
+
 @Service
 public class NgoServiceImpl implements NgoService {
 
@@ -137,5 +140,33 @@ public String requestDonation(Long donationId, DonationRequestDto request) {
     donationRequestRepository.save(donationRequest);
 
     return "Donation request submitted successfully.";
-}
+        }
+
+        @Override
+public List<MyDonationRequestResponse> getMyDonationRequests() {
+
+    UserResponse currentUser = authService.getCurrentUser();
+
+    User user = userRepository.findById(currentUser.getId())
+            .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+    Ngo ngo = ngoRepository.findByUser(user)
+            .orElseThrow(() -> new ResourceNotFoundException("NGO profile not found."));
+
+    List<DonationRequest> requests = donationRequestRepository.findByNgo(ngo);
+
+    return requests.stream()
+            .map(request -> MyDonationRequestResponse.builder()
+                    .requestId(request.getId())
+                    .donationId(request.getDonation().getId())
+                    .donationTitle(request.getDonation().getTitle())
+                    .restaurantName(request.getDonation()
+                            .getRestaurant()
+                            .getRestaurantName())
+                    .requestedQuantity(request.getRequestedQuantity())
+                    .status(request.getStatus())
+                    .requestedAt(request.getRequestedAt())
+                    .build())
+            .toList();
+        }        
 }
