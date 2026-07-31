@@ -17,4 +17,5 @@ public interface FoodDonationRepository extends JpaRepository<FoodDonation, Long
     List<FoodDonation> findByRestaurantAndStatus(Restaurant restaurant,
                                                  DonationStatus status);
 
+    long countByStatus(DonationStatus status);
 }
