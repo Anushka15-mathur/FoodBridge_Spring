@@ -17,6 +17,12 @@ import com.foodbridge.user.dto.response.UserResponse;
 import com.foodbridge.user.entity.User;
 import com.foodbridge.user.repository.UserRepository;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.foodbridge.donation.entity.FoodDonation;
+import com.foodbridge.ngo.dto.DonationCardResponse;
+
 @Service
 public class NgoServiceImpl implements NgoService {
 
@@ -62,4 +68,26 @@ public class NgoServiceImpl implements NgoService {
                         donationRequestRepository.countByNgo(ngo))
                 .build();
     }
+
+    @Override
+public List<DonationCardResponse> getAvailableDonations() {
+
+    List<FoodDonation> donations =
+            foodDonationRepository.findByStatus(DonationStatus.AVAILABLE);
+
+    return donations.stream()
+            .map(donation -> DonationCardResponse.builder()
+                    .id(donation.getId())
+                    .title(donation.getTitle())
+                    .restaurantName(
+                            donation.getRestaurant().getRestaurantName())
+                    .estimatedMeals(donation.getEstimatedMeals())
+                    .quantity(donation.getQuantity())
+                    .quantityUnit(donation.getQuantityUnit())
+                    .foodType(donation.getFoodType())
+                    .pickupAddress(donation.getPickupAddress())
+                    .expiryTime(donation.getExpiryTime())
+                    .build())
+            .collect(Collectors.toList());
+}
 }
