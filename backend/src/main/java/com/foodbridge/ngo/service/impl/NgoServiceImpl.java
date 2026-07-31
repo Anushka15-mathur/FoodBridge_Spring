@@ -23,6 +23,11 @@ import java.util.stream.Collectors;
 import com.foodbridge.donation.entity.FoodDonation;
 import com.foodbridge.ngo.dto.DonationCardResponse;
 
+import java.math.BigDecimal;
+
+import com.foodbridge.allocation.entity.DonationRequest;
+import com.foodbridge.ngo.dto.DonationRequestDto;
+
 @Service
 public class NgoServiceImpl implements NgoService {
 
@@ -89,5 +94,48 @@ public List<DonationCardResponse> getAvailableDonations() {
                     .expiryTime(donation.getExpiryTime())
                     .build())
             .collect(Collectors.toList());
+}
+
+@Override
+public String requestDonation(Long donationId, DonationRequestDto request) {
+
+    UserResponse currentUser = authService.getCurrentUser();
+
+    User user = userRepository.findById(currentUser.getId())
+            .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+    Ngo ngo = ngoRepository.findByUser(user)
+            .orElseThrow(() -> new ResourceNotFoundException("NGO profile not found."));
+
+    FoodDonation donation = foodDonationRepository.findById(donationId)
+            .orElseThrow(() -> new ResourceNotFoundException("Donation not found."));
+
+    if (donation.getStatus() != DonationStatus.AVAILABLE) {
+        throw new IllegalArgumentException("Donation is not available.");
+    }
+
+    if (request.getRequestedQuantity()
+            .compareTo(donation.getRemainingQuantity()) > 0) {
+
+        throw new IllegalArgumentException(
+                "Requested quantity exceeds remaining quantity.");
+    }
+
+    if (donationRequestRepository.existsByDonationAndNgo(donation, ngo)) {
+        throw new IllegalArgumentException(
+                "You have already requested this donation.");
+    }
+
+    DonationRequest donationRequest = DonationRequest.builder()
+            .donation(donation)
+            .ngo(ngo)
+            .requestedQuantity(request.getRequestedQuantity())
+            .requestMessage(request.getRequestMessage())
+            .status(DonationRequestStatus.PENDING)
+            .build();
+
+    donationRequestRepository.save(donationRequest);
+
+    return "Donation request submitted successfully.";
 }
 }

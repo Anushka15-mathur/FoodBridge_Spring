@@ -10,6 +10,9 @@ import com.foodbridge.ngo.service.NgoService;
 import java.util.List;
 import com.foodbridge.ngo.dto.DonationCardResponse;
 
+import com.foodbridge.ngo.dto.DonationRequestDto;
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/ngo")
 public class NgoController {
@@ -26,5 +29,13 @@ public class NgoController {
     public ResponseEntity<List<DonationCardResponse>> getAvailableDonations() {
     return ResponseEntity.ok(
             ngoService.getAvailableDonations());
-}
+    }
+    @PostMapping("/donations/{donationId}/request")
+    public ResponseEntity<String> requestDonation(
+        @PathVariable Long donationId,
+        @Valid @RequestBody DonationRequestDto request) {
+
+        return ResponseEntity.ok(
+            ngoService.requestDonation(donationId, request));
+    }
 }
