@@ -3,10 +3,10 @@ package com.foodbridge.ngo.service;
 import java.util.List;
 
 import com.foodbridge.ngo.dto.DonationCardResponse;
-import com.foodbridge.ngo.dto.NgoDashboardResponse;
+import com.foodbridge.ngo.dto.DonationDetailsResponse;
 import com.foodbridge.ngo.dto.DonationRequestDto;
 import com.foodbridge.ngo.dto.MyDonationRequestResponse;
-import com.foodbridge.ngo.dto.DonationDetailsResponse;
+import com.foodbridge.ngo.dto.NgoDashboardResponse;
 
 public interface NgoService {
 
@@ -19,4 +19,6 @@ public interface NgoService {
     List<MyDonationRequestResponse> getMyDonationRequests();
 
     DonationDetailsResponse getDonationDetails(Long donationId);
+
+    String cancelDonationRequest(Long requestId);
 }
