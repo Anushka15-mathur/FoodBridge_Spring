@@ -6,6 +6,7 @@
 
 # Backend
 backend/target/
+backend/uploads/ngos/
 
 # Frontend
 frontend/node_modules/
