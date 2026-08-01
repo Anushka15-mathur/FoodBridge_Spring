@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.foodbridge.restaurant.dto.ApproveRequestDto;
 
+import com.foodbridge.restaurant.dto.RejectRequestDto;
+
 @RestController
 @RequestMapping("/api/restaurant")
 public class RestaurantController {
@@ -38,5 +40,14 @@ public ResponseEntity<String> approveDonationRequest(
 
     return ResponseEntity.ok(
             restaurantService.approveDonationRequest(requestId, request));
+}
+
+@PutMapping("/requests/{requestId}/reject")
+public ResponseEntity<String> rejectDonationRequest(
+        @PathVariable Long requestId,
+        @RequestBody RejectRequestDto request) {
+
+    return ResponseEntity.ok(
+            restaurantService.rejectDonationRequest(requestId, request));
 }
 }
