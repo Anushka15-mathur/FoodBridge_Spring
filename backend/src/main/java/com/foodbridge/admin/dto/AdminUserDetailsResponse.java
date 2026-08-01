@@ -32,4 +32,25 @@ public class AdminUserDetailsResponse {
     private boolean profileCompleted;
 
     private LocalDateTime createdAt;
+
+    private String restaurantName;
+    private String licenseNumber;
+    private String address;
+    private String logoPath;
+    private String fssaiCertificatePath;
+
+    private String ngoName;
+    private String registrationNumber;
+    private Integer operatingRadius;
+    private String registrationCertificatePath;
+
+    private Double currentLatitude;
+    private Double currentLongitude;
+    private Integer maxDeliveryDistance;
+    private String drivingLicensePath;
+    private String identityProofPath;
+
+    private Boolean organization;
+    private String organizationName;
+    private String organizationProofPath;
 }

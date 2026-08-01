@@ -18,6 +18,10 @@ import com.foodbridge.user.entity.User;
 import com.foodbridge.user.enums.AccountStatus;
 import com.foodbridge.user.enums.Role;
 import com.foodbridge.user.repository.UserRepository;
+import com.foodbridge.restaurant.repository.RestaurantRepository;
+import com.foodbridge.ngo.repository.NgoRepository;
+import com.foodbridge.volunteer.repository.VolunteerRepository;
+import com.foodbridge.donor.repository.DonorRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +32,10 @@ public class AdminServiceImpl implements AdminService {
 	private final UserRepository userRepository;
 
 	private final AdminMapper adminMapper;
+	private final RestaurantRepository restaurantRepository;
+	private final NgoRepository ngoRepository;
+	private final VolunteerRepository volunteerRepository;
+	private final DonorRepository donorRepository;
 
 	@Override
 	public PageResponse<AdminUserSummaryResponse> getAllUsers(
@@ -56,7 +64,40 @@ public class AdminServiceImpl implements AdminService {
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"User not found with id : " + id));
 
-		return adminMapper.toDetailsResponse(user);
+		AdminUserDetailsResponse response = adminMapper.toDetailsResponse(user);
+
+		switch (user.getRole()) {
+			case RESTAURANT -> restaurantRepository.findByUser(user).ifPresent(profile -> {
+				response.setRestaurantName(profile.getRestaurantName());
+				response.setLicenseNumber(profile.getLicenseNumber());
+				response.setAddress(profile.getAddress());
+				response.setLogoPath(profile.getLogoPath());
+				response.setFssaiCertificatePath(profile.getFssaiCertificatePath());
+			});
+			case NGO -> ngoRepository.findByUser(user).ifPresent(profile -> {
+				response.setNgoName(profile.getNgoName());
+				response.setRegistrationNumber(profile.getRegistrationNumber());
+				response.setAddress(profile.getAddress());
+				response.setOperatingRadius(profile.getOperatingRadius());
+				response.setLogoPath(profile.getLogoPath());
+				response.setRegistrationCertificatePath(profile.getRegistrationCertificatePath());
+			});
+			case VOLUNTEER -> volunteerRepository.findByUser(user).ifPresent(profile -> {
+				response.setCurrentLatitude(profile.getCurrentLatitude());
+				response.setCurrentLongitude(profile.getCurrentLongitude());
+				response.setMaxDeliveryDistance(profile.getMaxDeliveryDistance());
+				response.setDrivingLicensePath(profile.getDrivingLicensePath());
+				response.setIdentityProofPath(profile.getIdentityProofPath());
+			});
+			case DONOR -> donorRepository.findByUser(user).ifPresent(profile -> {
+				response.setOrganization(profile.getOrganization());
+				response.setOrganizationName(profile.getOrganizationName());
+				response.setOrganizationProofPath(profile.getOrganizationProofPath());
+			});
+			default -> { }
+		}
+
+		return response;
 	}
 
 	@Override
