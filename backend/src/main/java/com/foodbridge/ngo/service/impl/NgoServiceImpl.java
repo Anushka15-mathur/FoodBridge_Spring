@@ -31,6 +31,8 @@ import com.foodbridge.ngo.dto.DonationRequestDto;
 import com.foodbridge.allocation.entity.DonationRequest;
 import com.foodbridge.ngo.dto.MyDonationRequestResponse;
 
+import com.foodbridge.ngo.dto.DonationDetailsResponse;
+
 @Service
 public class NgoServiceImpl implements NgoService {
 
@@ -169,4 +171,29 @@ public List<MyDonationRequestResponse> getMyDonationRequests() {
                     .build())
             .toList();
         }        
+
+        @Override
+public DonationDetailsResponse getDonationDetails(Long donationId) {
+
+    FoodDonation donation = foodDonationRepository.findById(donationId)
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("Donation not found."));
+
+    return DonationDetailsResponse.builder()
+            .id(donation.getId())
+            .title(donation.getTitle())
+            .description(donation.getDescription())
+            .restaurantName(
+                    donation.getRestaurant().getRestaurantName())
+            .foodType(donation.getFoodType())
+            .foodCondition(donation.getFoodCondition())
+            .quantity(donation.getQuantity())
+            .remainingQuantity(donation.getRemainingQuantity())
+            .quantityUnit(donation.getQuantityUnit())
+            .estimatedMeals(donation.getEstimatedMeals())
+            .pickupAddress(donation.getPickupAddress())
+            .expiryTime(donation.getExpiryTime())
+            .specialInstructions(donation.getSpecialInstructions())
+            .build();
+}
 }
