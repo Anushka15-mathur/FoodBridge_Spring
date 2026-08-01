@@ -1,20 +1,25 @@
 package com.foodbridge.ngo.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.foodbridge.ngo.dto.DonationCardResponse;
+import com.foodbridge.ngo.dto.DonationDetailsResponse;
+import com.foodbridge.ngo.dto.DonationRequestDto;
+import com.foodbridge.ngo.dto.MyDonationRequestResponse;
 import com.foodbridge.ngo.dto.NgoDashboardResponse;
 import com.foodbridge.ngo.service.NgoService;
 
-import java.util.List;
-import com.foodbridge.ngo.dto.DonationCardResponse;
-
-import com.foodbridge.ngo.dto.DonationRequestDto;
 import jakarta.validation.Valid;
-
-import com.foodbridge.ngo.dto.MyDonationRequestResponse;
-import com.foodbridge.ngo.dto.DonationDetailsResponse;
 
 @RestController
 @RequestMapping("/api/ngo")
@@ -55,5 +60,13 @@ public ResponseEntity<DonationDetailsResponse> getDonationDetails(
 
     return ResponseEntity.ok(
             ngoService.getDonationDetails(donationId));
+}
+
+@PutMapping("/requests/{requestId}/cancel")
+public ResponseEntity<String> cancelDonationRequest(
+        @PathVariable Long requestId) {
+
+    return ResponseEntity.ok(
+            ngoService.cancelDonationRequest(requestId));
 }
 }

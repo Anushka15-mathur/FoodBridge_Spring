@@ -1,14 +1,24 @@
 package com.foodbridge.ngo.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.foodbridge.allocation.entity.DonationRequest;
+import com.foodbridge.allocation.enums.DonationRequestStatus;
+import com.foodbridge.allocation.repository.DonationRequestRepository;
 import com.foodbridge.auth.service.AuthService;
+import com.foodbridge.donation.entity.FoodDonation;
 import com.foodbridge.donation.enums.DonationStatus;
 import com.foodbridge.donation.repository.FoodDonationRepository;
 import com.foodbridge.exception.ResourceNotFoundException;
-import com.foodbridge.allocation.enums.DonationRequestStatus;
-import com.foodbridge.allocation.repository.DonationRequestRepository;
+import com.foodbridge.ngo.dto.DonationCardResponse;
+import com.foodbridge.ngo.dto.DonationDetailsResponse;
+import com.foodbridge.ngo.dto.DonationRequestDto;
+import com.foodbridge.ngo.dto.MyDonationRequestResponse;
 import com.foodbridge.ngo.dto.NgoDashboardResponse;
 import com.foodbridge.ngo.entity.Ngo;
 import com.foodbridge.ngo.repository.NgoRepository;
@@ -16,22 +26,6 @@ import com.foodbridge.ngo.service.NgoService;
 import com.foodbridge.user.dto.response.UserResponse;
 import com.foodbridge.user.entity.User;
 import com.foodbridge.user.repository.UserRepository;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.foodbridge.donation.entity.FoodDonation;
-import com.foodbridge.ngo.dto.DonationCardResponse;
-
-import java.math.BigDecimal;
-
-import com.foodbridge.allocation.entity.DonationRequest;
-import com.foodbridge.ngo.dto.DonationRequestDto;
-
-import com.foodbridge.allocation.entity.DonationRequest;
-import com.foodbridge.ngo.dto.MyDonationRequestResponse;
-
-import com.foodbridge.ngo.dto.DonationDetailsResponse;
 
 @Service
 public class NgoServiceImpl implements NgoService {
@@ -195,5 +189,41 @@ public DonationDetailsResponse getDonationDetails(Long donationId) {
             .expiryTime(donation.getExpiryTime())
             .specialInstructions(donation.getSpecialInstructions())
             .build();
+}
+
+@Override
+@Transactional
+public String cancelDonationRequest(Long requestId) {
+
+    UserResponse currentUser = authService.getCurrentUser();
+
+    User user = userRepository.findById(currentUser.getId())
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("User not found."));
+
+    Ngo ngo = ngoRepository.findByUser(user)
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("NGO profile not found."));
+
+    DonationRequest donationRequest = donationRequestRepository
+            .findById(requestId)
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("Donation request not found."));
+
+    if (!donationRequest.getNgo().getId().equals(ngo.getId())) {
+        throw new IllegalArgumentException(
+                "You are not authorized to cancel this request.");
+    }
+
+    if (donationRequest.getStatus() != DonationRequestStatus.PENDING) {
+        throw new IllegalArgumentException(
+                "Only pending requests can be cancelled.");
+    }
+
+    donationRequest.setStatus(DonationRequestStatus.CANCELLED);
+
+    donationRequestRepository.save(donationRequest);
+
+    return "Donation request cancelled successfully.";
 }
 }
