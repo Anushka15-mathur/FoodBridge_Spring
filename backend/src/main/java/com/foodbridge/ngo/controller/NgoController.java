@@ -14,6 +14,7 @@ import com.foodbridge.ngo.dto.DonationRequestDto;
 import jakarta.validation.Valid;
 
 import com.foodbridge.ngo.dto.MyDonationRequestResponse;
+import com.foodbridge.ngo.dto.DonationDetailsResponse;
 
 @RestController
 @RequestMapping("/api/ngo")
@@ -47,4 +48,12 @@ public class NgoController {
     return ResponseEntity.ok(
             ngoService.getMyDonationRequests());
     }
+
+    @GetMapping("/donations/{donationId}")
+public ResponseEntity<DonationDetailsResponse> getDonationDetails(
+        @PathVariable Long donationId) {
+
+    return ResponseEntity.ok(
+            ngoService.getDonationDetails(donationId));
+}
 }
