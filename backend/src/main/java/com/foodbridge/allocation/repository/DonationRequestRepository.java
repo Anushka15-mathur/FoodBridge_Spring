@@ -21,4 +21,8 @@ public interface DonationRequestRepository extends JpaRepository<DonationRequest
     Optional<DonationRequest> findByDonationAndNgo(FoodDonation donation, Ngo ngo);
 
     boolean existsByDonationAndNgo(FoodDonation donation, Ngo ngo);
+
+    long countByNgoAndStatus(Ngo ngo, DonationRequestStatus status);
+
+    long countByNgo(Ngo ngo);
 }
