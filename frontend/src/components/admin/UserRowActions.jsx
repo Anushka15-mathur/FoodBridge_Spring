@@ -63,6 +63,7 @@ export default function UserRowActions({
       }
 
       removeUser();
+      setSheetOpen(false);
 
       const remainingUsers = pageData.content.length - 1;
 
@@ -71,10 +72,12 @@ export default function UserRowActions({
       } else {
         refreshUsers(pageData.page);
       }
+      return true;
     } catch (error) {
       toast.error(
         error?.response?.data?.message || "Action failed."
       );
+      return false;
     } finally {
       setLoading(false);
     }
@@ -94,8 +97,7 @@ export default function UserRowActions({
 
         {/* Approve */}
         <ActionDialog
-          title="Approve User?"
-          description="The user will be able to access FoodBridge."
+          action="approve"
           loading={loading}
           onConfirm={() => handleAction("approve")}
           button={
@@ -111,8 +113,7 @@ export default function UserRowActions({
 
         {/* Reject */}
         <ActionDialog
-          title="Reject User?"
-          description="This registration request will be rejected."
+          action="reject"
           loading={loading}
           onConfirm={() => handleAction("reject")}
           button={
@@ -129,8 +130,7 @@ export default function UserRowActions({
         {/* Suspend */}
         {showSuspend && (
           <ActionDialog
-            title="Suspend User?"
-            description="The user will no longer be able to log in."
+            action="suspend"
             loading={loading}
             onConfirm={() => handleAction("suspend")}
             button={
@@ -150,45 +150,54 @@ export default function UserRowActions({
         userId={user.id}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
+        onApprove={() => handleAction("approve")}
+        onReject={() => handleAction("reject")}
+        actionLoading={loading}
       />
     </>
   );
 }
 
-function ActionDialog({
-  title,
-  description,
-  button,
-  onConfirm,
-  loading,
-}) {
+function ActionDialog({ action, button, onConfirm, loading }) {
+  const [open, setOpen] = useState(false);
+  const approve = action === "approve";
+  const reject = action === "reject";
+
+  const handleConfirm = async () => {
+    const success = await onConfirm();
+    if (success) setOpen(false);
+  };
+
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         {button}
       </AlertDialogTrigger>
 
-      <AlertDialogContent>
+      <AlertDialogContent className="gap-6 rounded-2xl p-6">
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            {title}
-          </AlertDialogTitle>
+          <AlertDialogTitle>{approve ? "Approve User" : reject ? "Reject User" : "Suspend User"}</AlertDialogTitle>
 
           <AlertDialogDescription>
-            {description}
+            {approve
+              ? "This user will immediately gain access to FoodBridge after approval."
+              : reject
+              ? "This registration request will be rejected."
+              : "The user will no longer be able to log in."}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={loading}>
+        <AlertDialogFooter className="-mx-6 -mb-6 border-0 bg-transparent px-6 pb-6 pt-0">
+          <AlertDialogCancel disabled={loading} className="border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200">
             Cancel
           </AlertDialogCancel>
 
           <AlertDialogAction
-            onClick={onConfirm}
+            onClick={handleConfirm}
             disabled={loading}
+            className={approve ? "bg-primary text-white hover:bg-primary-hover hover:text-white" : "bg-destructive text-white hover:bg-destructive/90"}
           >
-            {loading ? "Processing..." : "Confirm"}
+            {loading ? "Processing..." : approve ? "Approve" : reject ? "Reject" : "Suspend"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
