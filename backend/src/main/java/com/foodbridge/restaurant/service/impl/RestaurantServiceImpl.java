@@ -31,6 +31,8 @@ import com.foodbridge.allocation.repository.DonationAllocationRepository;
 import org.springframework.transaction.annotation.Transactional;
 import com.foodbridge.donation.repository.FoodDonationRepository;
 
+import com.foodbridge.restaurant.dto.RejectRequestDto;
+
 @Service
 public class RestaurantServiceImpl implements RestaurantService {
 
@@ -144,5 +146,27 @@ public String approveDonationRequest(Long requestId,
     foodDonationRepository.save(donation);
 
     return "Donation request approved successfully.";
+}
+
+@Override
+@Transactional
+public String rejectDonationRequest(Long requestId,
+                                    RejectRequestDto request) {
+
+    DonationRequest donationRequest = donationRequestRepository
+            .findById(requestId)
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("Donation request not found."));
+
+    if (donationRequest.getStatus() != DonationRequestStatus.PENDING) {
+        throw new IllegalArgumentException(
+                "Only pending requests can be rejected.");
+    }
+
+    donationRequest.setStatus(DonationRequestStatus.REJECTED);
+
+    donationRequestRepository.save(donationRequest);
+
+    return "Donation request rejected successfully.";
 }
 }

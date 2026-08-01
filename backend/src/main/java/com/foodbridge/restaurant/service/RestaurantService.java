@@ -6,10 +6,13 @@ import com.foodbridge.restaurant.dto.RestaurantRequestResponse;
 
 import com.foodbridge.restaurant.dto.ApproveRequestDto;
 
+import com.foodbridge.restaurant.dto.RejectRequestDto;
+
 public interface RestaurantService {
 
     List<RestaurantRequestResponse> getDonationRequests();
 
     String approveDonationRequest(Long requestId, ApproveRequestDto request);
 
+    String rejectDonationRequest(Long requestId, RejectRequestDto request);
 }
