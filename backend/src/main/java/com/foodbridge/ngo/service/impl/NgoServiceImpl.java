@@ -60,20 +60,28 @@ public class NgoServiceImpl implements NgoService {
                 .orElseThrow(() -> new ResourceNotFoundException("NGO profile not found."));
 
         return NgoDashboardResponse.builder()
-                .ngoName(ngo.getNgoName())
-                .availableDonations(
-                        foodDonationRepository.countByStatus(DonationStatus.AVAILABLE))
-                .pendingRequests(
-                        donationRequestRepository.countByNgoAndStatus(
-                                ngo,
-                                DonationRequestStatus.PENDING))
-                .approvedRequests(
-                        donationRequestRepository.countByNgoAndStatus(
-                                ngo,
-                                DonationRequestStatus.APPROVED))
-                .totalRequests(
-                        donationRequestRepository.countByNgo(ngo))
-                .build();
+        .ngoName(ngo.getNgoName())
+        .availableDonations(
+                foodDonationRepository.countByStatus(DonationStatus.AVAILABLE))
+        .pendingRequests(
+                donationRequestRepository.countByNgoAndStatus(
+                        ngo,
+                        DonationRequestStatus.PENDING))
+        .approvedRequests(
+                donationRequestRepository.countByNgoAndStatus(
+                        ngo,
+                        DonationRequestStatus.APPROVED))
+        .rejectedRequests(
+                donationRequestRepository.countByNgoAndStatus(
+                        ngo,
+                        DonationRequestStatus.REJECTED))
+        .cancelledRequests(
+                donationRequestRepository.countByNgoAndStatus(
+                        ngo,
+                        DonationRequestStatus.CANCELLED))
+        .totalRequests(
+                donationRequestRepository.countByNgo(ngo))
+        .build();
     }
 
     @Override
@@ -115,6 +123,15 @@ public String requestDonation(Long donationId, DonationRequestDto request) {
     if (donation.getStatus() != DonationStatus.AVAILABLE) {
         throw new IllegalArgumentException("Donation is not available.");
     }
+
+    if (donation.getExpiryTime().isBefore(java.time.LocalDateTime.now())) {
+    throw new IllegalArgumentException("Donation has expired.");
+        }
+
+   if (donation.getRemainingQuantity().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+    throw new IllegalArgumentException(
+            "No quantity remaining for this donation.");
+   }        
 
     if (request.getRequestedQuantity()
             .compareTo(donation.getRemainingQuantity()) > 0) {
