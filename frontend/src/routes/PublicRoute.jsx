@@ -21,7 +21,7 @@ export default function PublicRoute() {
     }
 
     if (isAuthenticated && user?.role === "RESTAURANT") {
-        return <Navigate to="/restaurant/profile" replace />;
+        return <Navigate to="/restaurant/dashboard" replace />;
     }
 
     return <Outlet />;
