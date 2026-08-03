@@ -11,16 +11,11 @@ import lombok.Setter;
 public class UserResponse {
 
     private Long id;
-
     private String firstName;
-
     private String lastName;
-
     private String email;
-
     private String phone;
-
     private Role role;
-
     private AccountStatus status;
+    private boolean profileCompleted;
 }

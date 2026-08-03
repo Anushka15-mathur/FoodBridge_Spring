@@ -75,6 +75,14 @@ export default function Dashboard() {
                 const response = await restaurantService.getDashboard();
                 setDashboard(response);
             } catch (error) {
+                if (error.response?.status === 404) {
+                    navigate("/additional-info", {
+                        replace: true,
+                        state: { role: "RESTAURANT" },
+                    });
+                    return;
+                }
+
                 toast.error(
                     error.response?.data?.message ||
                     "Failed to load restaurant dashboard."
@@ -86,7 +94,7 @@ export default function Dashboard() {
         };
 
         fetchDashboard();
-    }, []);
+    }, [navigate]);
 
     if (loading) {
         return (

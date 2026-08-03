@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import authService from "../services/authService";
 import { getToken, setToken, removeToken } from "../utils/token";
 import { setAuthToken } from "../services/api";
@@ -10,10 +10,14 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const refreshUser = useCallback(async () => {
+        const currentUser = await authService.getCurrentUser();
+        setUser(currentUser);
+        return currentUser;
+    }, []);
+
     useEffect(() => {
-
         const restoreSession = async () => {
-
             const storedToken = getToken();
 
             if (!storedToken) {
@@ -22,41 +26,26 @@ export function AuthProvider({ children }) {
             }
 
             try {
-
                 setAuthToken(storedToken);
                 setTokenState(storedToken);
-
-                const currentUser = await authService.getCurrentUser();
-
-                setUser(currentUser);
-
-            } catch (error) {
-
+                await refreshUser();
+            } catch {
                 removeToken();
                 setAuthToken(null);
                 setTokenState(null);
                 setUser(null);
-
             } finally {
-
                 setLoading(false);
-
             }
         };
 
         restoreSession();
-
-    }, []);
+    }, [refreshUser]);
 
     const login = async (credentials) => {
-
         const response = await authService.login(credentials);
 
-        console.log("Login Response:", response);
-        console.log("Token:", response.token);
-
         if (response.token) {
-
             setToken(response.token);
             setAuthToken(response.token);
             setTokenState(response.token);
@@ -78,8 +67,9 @@ export function AuthProvider({ children }) {
         user,
         login,
         logout,
+        refreshUser,
         loading,
-        isAuthenticated: !!token,
+        isAuthenticated: Boolean(token),
     };
 
     return (

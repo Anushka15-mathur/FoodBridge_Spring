@@ -52,7 +52,14 @@ export default function LoginForm() {
             if (response.user?.role === "ADMIN") {
                 navigate("/admin/dashboard");
             } else if (response.user?.role === "RESTAURANT") {
-                navigate("/restaurant/dashboard");
+                if (response.user.profileCompleted) {
+                    navigate("/restaurant/dashboard");
+                } else {
+                    navigate("/additional-info", {
+                        replace: true,
+                        state: { role: "RESTAURANT" },
+                    });
+                }
             } else {
                 // Dashboards for other roles aren't built yet,
                 // send them back to the home page for now.

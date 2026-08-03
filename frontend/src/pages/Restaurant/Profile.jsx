@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
     BadgeCheck,
@@ -16,6 +17,7 @@ import { Card, CardContent } from "../../components/ui/card";
 
 export default function Profile() {
 
+    const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -27,6 +29,14 @@ export default function Profile() {
                 setError(false);
                 setProfile(await restaurantService.getProfile());
             } catch (err) {
+                if (err.response?.status === 404) {
+                    navigate("/additional-info", {
+                        replace: true,
+                        state: { role: "RESTAURANT" },
+                    });
+                    return;
+                }
+
                 setError(true);
                 toast.error(
                     err.response?.data?.message ||
@@ -39,7 +49,7 @@ export default function Profile() {
         };
 
         fetchProfile();
-    }, []);
+    }, [navigate]);
 
     if (loading) {
         return (

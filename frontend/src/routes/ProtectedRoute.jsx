@@ -20,16 +20,26 @@ export default function ProtectedRoute({ allowedRoles }) {
         return <Navigate to="/login" replace />;
     }
 
-    // Wait until the user is loaded before checking roles
     if (!user) {
         return null;
     }
 
-    if (
-        allowedRoles &&
-        !allowedRoles.includes(user.role)
-    ) {
+    if (allowedRoles && !allowedRoles.includes(user.role)) {
         return <Navigate to="/" replace />;
+    }
+
+    if (
+        user.role === "RESTAURANT" &&
+        allowedRoles?.includes("RESTAURANT") &&
+        !user.profileCompleted
+    ) {
+        return (
+            <Navigate
+                to="/additional-info"
+                replace
+                state={{ role: "RESTAURANT" }}
+            />
+        );
     }
 
     return <Outlet />;
