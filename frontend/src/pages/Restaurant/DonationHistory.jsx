@@ -176,7 +176,7 @@ export default function DonationHistory() {
                                     </TableCell>
 
                                     <TableCell>
-                                        {donation.quantity}
+                                        {donation.quantity} {donation.quantityUnit}
                                     </TableCell>
 
                                     <TableCell>
