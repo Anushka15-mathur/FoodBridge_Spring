@@ -21,4 +21,8 @@ public class NgoDashboardResponse {
 
     private long totalRequests;
 
+    private Long rejectedRequests;
+
+    private Long cancelledRequests;
+
 }

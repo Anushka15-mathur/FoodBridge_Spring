@@ -27,6 +27,9 @@ import com.foodbridge.user.dto.response.UserResponse;
 import com.foodbridge.user.entity.User;
 import com.foodbridge.user.repository.UserRepository;
 
+import com.foodbridge.ngo.dto.NgoProfileResponse;
+import com.foodbridge.ngo.dto.UpdateNgoProfileDto;
+
 @Service
 public class NgoServiceImpl implements NgoService {
 
@@ -57,20 +60,28 @@ public class NgoServiceImpl implements NgoService {
                 .orElseThrow(() -> new ResourceNotFoundException("NGO profile not found."));
 
         return NgoDashboardResponse.builder()
-                .ngoName(ngo.getNgoName())
-                .availableDonations(
-                        foodDonationRepository.countByStatus(DonationStatus.AVAILABLE))
-                .pendingRequests(
-                        donationRequestRepository.countByNgoAndStatus(
-                                ngo,
-                                DonationRequestStatus.PENDING))
-                .approvedRequests(
-                        donationRequestRepository.countByNgoAndStatus(
-                                ngo,
-                                DonationRequestStatus.APPROVED))
-                .totalRequests(
-                        donationRequestRepository.countByNgo(ngo))
-                .build();
+        .ngoName(ngo.getNgoName())
+        .availableDonations(
+                foodDonationRepository.countByStatus(DonationStatus.AVAILABLE))
+        .pendingRequests(
+                donationRequestRepository.countByNgoAndStatus(
+                        ngo,
+                        DonationRequestStatus.PENDING))
+        .approvedRequests(
+                donationRequestRepository.countByNgoAndStatus(
+                        ngo,
+                        DonationRequestStatus.APPROVED))
+        .rejectedRequests(
+                donationRequestRepository.countByNgoAndStatus(
+                        ngo,
+                        DonationRequestStatus.REJECTED))
+        .cancelledRequests(
+                donationRequestRepository.countByNgoAndStatus(
+                        ngo,
+                        DonationRequestStatus.CANCELLED))
+        .totalRequests(
+                donationRequestRepository.countByNgo(ngo))
+        .build();
     }
 
     @Override
@@ -112,6 +123,15 @@ public String requestDonation(Long donationId, DonationRequestDto request) {
     if (donation.getStatus() != DonationStatus.AVAILABLE) {
         throw new IllegalArgumentException("Donation is not available.");
     }
+
+    if (donation.getExpiryTime().isBefore(java.time.LocalDateTime.now())) {
+    throw new IllegalArgumentException("Donation has expired.");
+        }
+
+   if (donation.getRemainingQuantity().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+    throw new IllegalArgumentException(
+            "No quantity remaining for this donation.");
+   }        
 
     if (request.getRequestedQuantity()
             .compareTo(donation.getRemainingQuantity()) > 0) {
@@ -225,5 +245,60 @@ public String cancelDonationRequest(Long requestId) {
     donationRequestRepository.save(donationRequest);
 
     return "Donation request cancelled successfully.";
+}
+
+@Override
+public NgoProfileResponse getProfile() {
+
+    UserResponse currentUser = authService.getCurrentUser();
+
+    User user = userRepository.findById(currentUser.getId())
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("User not found."));
+
+    Ngo ngo = ngoRepository.findByUser(user)
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("NGO profile not found."));
+
+    return NgoProfileResponse.builder()
+            .ngoName(ngo.getNgoName())
+            .registrationNumber(ngo.getRegistrationNumber())
+            .address(ngo.getAddress())
+            .latitude(ngo.getLatitude())
+            .longitude(ngo.getLongitude())
+            .operatingRadius(ngo.getOperatingRadius())
+            .placeId(ngo.getPlaceId())
+            .email(user.getEmail())
+            .phone(user.getPhone())
+            .build();
+}
+
+@Override
+@Transactional
+public String updateProfile(UpdateNgoProfileDto request) {
+
+    UserResponse currentUser = authService.getCurrentUser();
+
+    User user = userRepository.findById(currentUser.getId())
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("User not found."));
+
+    Ngo ngo = ngoRepository.findByUser(user)
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("NGO profile not found."));
+
+    ngo.setNgoName(request.getNgoName());
+    ngo.setAddress(request.getAddress());
+    ngo.setLatitude(request.getLatitude());
+    ngo.setLongitude(request.getLongitude());
+    ngo.setOperatingRadius(request.getOperatingRadius());
+    ngo.setPlaceId(request.getPlaceId());
+
+    user.setPhone(request.getPhone());
+
+    ngoRepository.save(ngo);
+    userRepository.save(user);
+
+    return "NGO profile updated successfully.";
 }
 }
