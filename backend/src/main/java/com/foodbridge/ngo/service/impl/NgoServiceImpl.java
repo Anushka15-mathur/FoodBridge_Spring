@@ -26,7 +26,9 @@ import com.foodbridge.ngo.service.NgoService;
 import com.foodbridge.user.dto.response.UserResponse;
 import com.foodbridge.user.entity.User;
 import com.foodbridge.user.repository.UserRepository;
+
 import com.foodbridge.ngo.dto.NgoProfileResponse;
+import com.foodbridge.ngo.dto.UpdateNgoProfileDto;
 
 @Service
 public class NgoServiceImpl implements NgoService {
@@ -252,5 +254,34 @@ public NgoProfileResponse getProfile() {
             .email(user.getEmail())
             .phone(user.getPhone())
             .build();
+}
+
+@Override
+@Transactional
+public String updateProfile(UpdateNgoProfileDto request) {
+
+    UserResponse currentUser = authService.getCurrentUser();
+
+    User user = userRepository.findById(currentUser.getId())
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("User not found."));
+
+    Ngo ngo = ngoRepository.findByUser(user)
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("NGO profile not found."));
+
+    ngo.setNgoName(request.getNgoName());
+    ngo.setAddress(request.getAddress());
+    ngo.setLatitude(request.getLatitude());
+    ngo.setLongitude(request.getLongitude());
+    ngo.setOperatingRadius(request.getOperatingRadius());
+    ngo.setPlaceId(request.getPlaceId());
+
+    user.setPhone(request.getPhone());
+
+    ngoRepository.save(ngo);
+    userRepository.save(user);
+
+    return "NGO profile updated successfully.";
 }
 }

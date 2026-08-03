@@ -20,7 +20,9 @@ import com.foodbridge.ngo.dto.NgoDashboardResponse;
 import com.foodbridge.ngo.service.NgoService;
 
 import jakarta.validation.Valid;
+
 import com.foodbridge.ngo.dto.NgoProfileResponse;
+import com.foodbridge.ngo.dto.UpdateNgoProfileDto;
 
 @RestController
 @RequestMapping("/api/ngo")
@@ -76,5 +78,12 @@ public ResponseEntity<NgoProfileResponse> getProfile() {
 
     return ResponseEntity.ok(
             ngoService.getProfile());
+}
+@PutMapping("/profile")
+public ResponseEntity<String> updateProfile(
+        @Valid @RequestBody UpdateNgoProfileDto request) {
+
+    return ResponseEntity.ok(
+            ngoService.updateProfile(request));
 }
 }
