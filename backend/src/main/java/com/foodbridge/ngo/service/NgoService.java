@@ -7,6 +7,7 @@ import com.foodbridge.ngo.dto.DonationDetailsResponse;
 import com.foodbridge.ngo.dto.DonationRequestDto;
 import com.foodbridge.ngo.dto.MyDonationRequestResponse;
 import com.foodbridge.ngo.dto.NgoDashboardResponse;
+import com.foodbridge.ngo.dto.NgoProfileResponse;
 
 public interface NgoService {
 
@@ -21,4 +22,6 @@ public interface NgoService {
     DonationDetailsResponse getDonationDetails(Long donationId);
 
     String cancelDonationRequest(Long requestId);
+    
+    NgoProfileResponse getProfile();
 }
