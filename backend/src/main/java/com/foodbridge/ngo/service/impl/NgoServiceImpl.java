@@ -26,6 +26,7 @@ import com.foodbridge.ngo.service.NgoService;
 import com.foodbridge.user.dto.response.UserResponse;
 import com.foodbridge.user.entity.User;
 import com.foodbridge.user.repository.UserRepository;
+import com.foodbridge.ngo.dto.NgoProfileResponse;
 
 @Service
 public class NgoServiceImpl implements NgoService {
@@ -225,5 +226,31 @@ public String cancelDonationRequest(Long requestId) {
     donationRequestRepository.save(donationRequest);
 
     return "Donation request cancelled successfully.";
+}
+
+@Override
+public NgoProfileResponse getProfile() {
+
+    UserResponse currentUser = authService.getCurrentUser();
+
+    User user = userRepository.findById(currentUser.getId())
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("User not found."));
+
+    Ngo ngo = ngoRepository.findByUser(user)
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("NGO profile not found."));
+
+    return NgoProfileResponse.builder()
+            .ngoName(ngo.getNgoName())
+            .registrationNumber(ngo.getRegistrationNumber())
+            .address(ngo.getAddress())
+            .latitude(ngo.getLatitude())
+            .longitude(ngo.getLongitude())
+            .operatingRadius(ngo.getOperatingRadius())
+            .placeId(ngo.getPlaceId())
+            .email(user.getEmail())
+            .phone(user.getPhone())
+            .build();
 }
 }

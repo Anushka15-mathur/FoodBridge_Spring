@@ -20,6 +20,7 @@ import com.foodbridge.ngo.dto.NgoDashboardResponse;
 import com.foodbridge.ngo.service.NgoService;
 
 import jakarta.validation.Valid;
+import com.foodbridge.ngo.dto.NgoProfileResponse;
 
 @RestController
 @RequestMapping("/api/ngo")
@@ -68,5 +69,12 @@ public ResponseEntity<String> cancelDonationRequest(
 
     return ResponseEntity.ok(
             ngoService.cancelDonationRequest(requestId));
+}
+
+@GetMapping("/profile")
+public ResponseEntity<NgoProfileResponse> getProfile() {
+
+    return ResponseEntity.ok(
+            ngoService.getProfile());
 }
 }
