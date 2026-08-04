@@ -26,6 +26,11 @@ const menuItems = [
     path: "/admin/users",
     icon: Users,
   },
+  {
+    name: "Food Distribution",
+    path: "/admin/food-distribution",
+    icon: LayoutDashboard,
+  },
 ];
 
 export default function AdminSidebar() {

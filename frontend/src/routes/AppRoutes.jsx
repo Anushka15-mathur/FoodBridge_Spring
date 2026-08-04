@@ -25,6 +25,7 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import Dashboard from "../pages/admin/Dashboard";
 import PendingUsers from "../pages/admin/PendingUsers";
 import AllUsers from "../pages/admin/AllUsers";
+import AdminRoutes from "./AdminRoutes";
 
 // Restaurant Pages
 import Profile from "../pages/Restaurant/Profile";
@@ -63,9 +64,7 @@ export default function AppRoutes() {
         {/* Protected Admin Routes */}
         <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
           <Route element={<AdminLayout />}>
-            <Route path="/admin/dashboard" element={<Dashboard />} />
-            <Route path="/admin/pending-users" element={<PendingUsers />} />
-            <Route path="/admin/users" element={<AllUsers />} />
+            <Route path="/admin/*" element={<AdminRoutes />} />
           </Route>
         </Route>
 
