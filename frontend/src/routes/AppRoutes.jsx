@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import PublicLayout from "../layouts/PublicLayout";
 import AuthLayout from "../layouts/AuthLayout";
@@ -22,12 +22,13 @@ import PendingApproval from "../pages/auth/PendingApproval";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 
 // Admin Pages
-import Dashboard from "../pages/admin/Dashboard";
+import AdminDashboard from "../pages/admin/Dashboard";
 import PendingUsers from "../pages/admin/PendingUsers";
 import AllUsers from "../pages/admin/AllUsers";
 import AdminRoutes from "./AdminRoutes";
 
 // Restaurant Pages
+import RestaurantDashboard from "../pages/Restaurant/Dashboard";
 import Profile from "../pages/Restaurant/Profile";
 import AddDonation from "../pages/Restaurant/AddDonation";
 import DonationHistory from "../pages/Restaurant/DonationHistory";
@@ -64,13 +65,17 @@ export default function AppRoutes() {
         {/* Protected Admin Routes */}
         <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
           <Route element={<AdminLayout />}>
-            <Route path="/admin/*" element={<AdminRoutes />} />
+            <Route path="/admin/dashboard" element={<Dashboard />} />
+            <Route path="/admin/pending-users" element={<PendingUsers />} />
+            <Route path="/admin/users" element={<AllUsers />} />
           </Route>
         </Route>
 
         {/* Protected Restaurant Routes */}
         <Route element={<ProtectedRoute allowedRoles={["RESTAURANT"]} />}>
           <Route element={<RestaurantLayout />}>
+            <Route path="/restaurant" element={<Navigate to="/restaurant/dashboard" replace />} />
+            <Route path="/restaurant/dashboard" element={<RestaurantDashboard />} />
             <Route path="/restaurant/profile" element={<Profile />} />
             <Route path="/restaurant/add-donation" element={<AddDonation />} />
             <Route path="/restaurant/donations" element={<DonationHistory />} />

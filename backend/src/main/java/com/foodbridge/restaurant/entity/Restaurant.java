@@ -34,6 +34,15 @@ public class Restaurant extends BaseEntity {
     @NotBlank(message = "Address is required")
     private String address;
 
+    @Column(length = 100)
+private String city;
+
+@Column(length = 100)
+private String state;
+
+@Column(length = 10)
+private String pincode;
+
     @Column
     @DecimalMin(value = "-90.0")
     @DecimalMax(value = "90.0")

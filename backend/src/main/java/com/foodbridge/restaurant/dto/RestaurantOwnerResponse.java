@@ -1,22 +1,19 @@
-package com.foodbridge.auth.dto.response;
-
-import com.foodbridge.user.enums.Role;
+package com.foodbridge.restaurant.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInfoResponse {
+public class RestaurantOwnerResponse {
 
     private Long id;
     private String firstName;
     private String lastName;
     private String email;
-    private Role role;
-    private boolean profileCompleted;
+    private String phone;
 }

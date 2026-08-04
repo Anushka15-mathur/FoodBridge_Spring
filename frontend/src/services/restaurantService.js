@@ -13,6 +13,11 @@ const restaurantService = {
     //   restaurantName, licenseNumber, address, city, state,
     //   pincode, logoUrl, fssaiCertificateUrl
     // }
+    getDashboard: async () => {
+        const response = await api.get("/restaurant/dashboard");
+        return response.data;
+    },
+
     getProfile: async () => {
         const response = await api.get("/restaurant/profile");
         return response.data;
