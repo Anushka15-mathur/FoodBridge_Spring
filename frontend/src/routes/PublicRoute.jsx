@@ -2,7 +2,6 @@ import { Navigate, Outlet } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
 export default function PublicRoute() {
-
     const {
         isAuthenticated,
         loading,
@@ -13,16 +12,13 @@ export default function PublicRoute() {
         return null;
     }
 
-    // Only bounce roles that have a real dashboard built.
-    // Other roles don't have their own dashboard yet, so let
-    // them keep browsing the public site instead of looping.
+    // Admin ka existing behavior same rahega
     if (isAuthenticated && user?.role === "ADMIN") {
         return <Navigate to="/admin/dashboard" replace />;
     }
 
-    if (isAuthenticated && user?.role === "RESTAURANT") {
-        return <Navigate to="/restaurant/profile" replace />;
-    }
+    // Restaurant ko yahan redirect mat karo
+    // Restaurant redirect LoginForm aur ProtectedRoute handle karenge
 
     return <Outlet />;
 }

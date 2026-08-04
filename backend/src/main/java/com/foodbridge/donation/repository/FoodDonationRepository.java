@@ -1,6 +1,7 @@
 package com.foodbridge.donation.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,6 +17,13 @@ public interface FoodDonationRepository extends JpaRepository<FoodDonation, Long
 
     List<FoodDonation> findByRestaurantAndStatus(Restaurant restaurant,
                                                  DonationStatus status);
+
+    List<FoodDonation> findByRestaurantAndIsDeletedFalseOrderByCreatedAtDesc(
+            Restaurant restaurant);
+
+    Optional<FoodDonation> findByIdAndRestaurantAndIsDeletedFalse(
+            Long id,
+            Restaurant restaurant);
 
     long countByStatus(DonationStatus status);
 }

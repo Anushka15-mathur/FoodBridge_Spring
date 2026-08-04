@@ -1,11 +1,17 @@
 import { NavLink } from "react-router-dom";
 import {
+  LayoutDashboard,
   Store,
   PlusCircle,
   History,
 } from "lucide-react";
 
 const menuItems = [
+  {
+    name: "Dashboard",
+    path: "/restaurant/dashboard",
+    icon: LayoutDashboard,
+  },
   {
     name: "Profile",
     path: "/restaurant/profile",

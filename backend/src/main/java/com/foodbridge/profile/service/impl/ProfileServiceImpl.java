@@ -5,7 +5,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.foodbridge.security.CustomUserDetails;
 import com.foodbridge.exception.ResourceNotFoundException;
@@ -59,22 +58,26 @@ public class ProfileServiceImpl implements ProfileService {
 
         User user = getCurrentUser();
 
-        String logoPath = fileStorageService.storeFile(logo, "restaurants");
-
-        String certificatePath = fileStorageService.storeFile(certificate, "restaurants");
-
         if (user.getRole() != Role.RESTAURANT) {
             throw new IllegalStateException("User is not a restaurant.");
         }
 
         if (restaurantRepository.findByUser(user).isPresent()) {
-            throw new IllegalStateException("Restaurant profile already exists.");
+            user.setProfileCompleted(true);
+            userRepository.save(user);
+            return;
         }
+
+        String logoPath = fileStorageService.storeFile(logo, "restaurants");
+        String certificatePath = fileStorageService.storeFile(certificate, "restaurants");
 
         Restaurant restaurant = Restaurant.builder()
                 .user(user)
                 .restaurantName(request.getRestaurantName())
                 .address(request.getAddress())
+                .city(request.getCity())
+                .state(request.getState())
+                .pincode(request.getPincode())
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .licenseNumber(request.getLicenseNumber())

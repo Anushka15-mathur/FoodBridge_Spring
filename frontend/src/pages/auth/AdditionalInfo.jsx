@@ -10,13 +10,15 @@ import NGOForm from "../../components/forms/NGOForm";
 import VolunteerForm from "../../components/forms/VolunteerForm";
 
 import profileService from "../../services/profileService";
+import useAuth from "../../hooks/useAuth";
 
 export default function AdditionalInfo() {
 
   const navigate = useNavigate();
   const { state } = useLocation();
+  const { user, refreshUser } = useAuth();
 
-  const role = state?.role;
+  const role = state?.role || user?.role;
 
   const handleProfileSubmit = async (formData) => {
 
@@ -138,7 +140,16 @@ export default function AdditionalInfo() {
 
       toast.success("Profile completed successfully.");
 
-      navigate("/pending-approval");
+      const refreshedUser = await refreshUser();
+
+      if (
+        role === "RESTAURANT" &&
+        refreshedUser?.status === "APPROVED"
+      ) {
+        navigate("/restaurant/dashboard", { replace: true });
+      } else {
+        navigate("/pending-approval", { replace: true });
+      }
 
     } catch (error) {
 
@@ -156,6 +167,10 @@ export default function AdditionalInfo() {
 
   if (!role) {
     return <Navigate to="/register" replace />;
+  }
+
+  if (role === "RESTAURANT" && user?.profileCompleted) {
+    return <Navigate to="/restaurant/dashboard" replace />;
   }
 
   return (

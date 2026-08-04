@@ -3,6 +3,7 @@ import { Input } from "../ui/input";
 export default function AddressFields({
   register,
   errors,
+  required = false,
 }) {
   return (
     <>
@@ -13,7 +14,9 @@ export default function AddressFields({
 
         <Input
           placeholder="Enter your address"
-          {...register("address")}
+          {...register("address", {
+            required: required ? "Address is required" : false,
+          })}
         />
 
         {errors.address && (
@@ -24,7 +27,6 @@ export default function AddressFields({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-
         <div>
           <label className="mb-2 block font-medium text-heading">
             City
@@ -32,7 +34,9 @@ export default function AddressFields({
 
           <Input
             placeholder="City"
-            {...register("city")}
+            {...register("city", {
+              required: required ? "City is required" : false,
+            })}
           />
 
           {errors.city && (
@@ -49,7 +53,9 @@ export default function AddressFields({
 
           <Input
             placeholder="State"
-            {...register("state")}
+            {...register("state", {
+              required: required ? "State is required" : false,
+            })}
           />
 
           {errors.state && (
@@ -58,7 +64,6 @@ export default function AddressFields({
             </p>
           )}
         </div>
-
       </div>
 
       <div>
@@ -68,7 +73,15 @@ export default function AddressFields({
 
         <Input
           placeholder="411001"
-          {...register("pincode")}
+          {...register("pincode", {
+            required: required ? "Pincode is required" : false,
+            pattern: required
+              ? {
+                  value: /^\d{6}$/,
+                  message: "Enter a valid 6-digit pincode",
+                }
+              : undefined,
+          })}
         />
 
         {errors.pincode && (
