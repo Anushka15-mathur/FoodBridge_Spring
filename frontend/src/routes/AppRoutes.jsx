@@ -1,4 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 import PublicLayout from "../layouts/PublicLayout";
 import AuthLayout from "../layouts/AuthLayout";
@@ -25,7 +30,13 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import AdminDashboard from "../pages/admin/Dashboard";
 import PendingUsers from "../pages/admin/PendingUsers";
 import AllUsers from "../pages/admin/AllUsers";
-import AdminRoutes from "./AdminRoutes";
+
+// Food Distribution Pages
+import FoodDistributionDashboard from "../pages/admin/food-distribution/FoodDistributionDashboard";
+import FoodDistributionDonations from "../pages/admin/food-distribution/FoodDistributionDonations";
+import DonationRequests from "../pages/admin/food-distribution/DonationRequests";
+import AllocationCenter from "../pages/admin/food-distribution/AllocationCenter";
+import AllocationHistory from "../pages/admin/food-distribution/AllocationHistory";
 
 // Restaurant Pages
 import RestaurantDashboard from "../pages/Restaurant/Dashboard";
@@ -38,7 +49,6 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* Public Pages */}
         <Route element={<PublicRoute />}>
           <Route element={<PublicLayout />}>
@@ -48,41 +58,144 @@ export default function AppRoutes() {
             <Route path="/how-it-works" element={<HowItWorks />} />
           </Route>
 
-          {/* Authentication */}
+          {/* Authentication Pages */}
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
+
+            <Route
+              path="/forgot-password"
+              element={<ForgotPassword />}
+            />
           </Route>
         </Route>
 
         {/* Registration Flow */}
         <Route element={<AuthLayout />}>
-          <Route path="/additional-info" element={<AdditionalInfo />} />
-          <Route path="/pending-approval" element={<PendingApproval />} />
+          <Route
+            path="/additional-info"
+            element={<AdditionalInfo />}
+          />
+
+          <Route
+            path="/pending-approval"
+            element={<PendingApproval />}
+          />
         </Route>
 
         {/* Protected Admin Routes */}
-        <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+        <Route
+          element={<ProtectedRoute allowedRoles={["ADMIN"]} />}
+        >
           <Route element={<AdminLayout />}>
-            <Route path="/admin/dashboard" element={<Dashboard />} />
-            <Route path="/admin/pending-users" element={<PendingUsers />} />
-            <Route path="/admin/users" element={<AllUsers />} />
+            <Route
+              path="/admin"
+              element={
+                <Navigate
+                  to="/admin/dashboard"
+                  replace
+                />
+              }
+            />
+
+            <Route
+              path="/admin/dashboard"
+              element={<AdminDashboard />}
+            />
+
+            <Route
+              path="/admin/pending-users"
+              element={<PendingUsers />}
+            />
+
+            <Route
+              path="/admin/users"
+              element={<AllUsers />}
+            />
+
+            {/* Food Distribution main dashboard */}
+            <Route
+              path="/admin/food-distribution"
+              element={<FoodDistributionDashboard />}
+            />
+
+            {/* View Donations */}
+            <Route
+              path="/admin/food-distribution/donations"
+              element={<FoodDistributionDonations />}
+            />
+
+            {/* View Requests */}
+            <Route
+              path="/admin/food-distribution/requests"
+              element={<DonationRequests />}
+            />
+
+            {/* Allocation Center */}
+            <Route
+              path="/admin/food-distribution/allocation"
+              element={<AllocationCenter />}
+            />
+
+            {/* Allocation History */}
+            <Route
+              path="/admin/food-distribution/history"
+              element={<AllocationHistory />}
+            />
           </Route>
         </Route>
 
         {/* Protected Restaurant Routes */}
-        <Route element={<ProtectedRoute allowedRoles={["RESTAURANT"]} />}>
+        <Route
+          element={
+            <ProtectedRoute
+              allowedRoles={["RESTAURANT"]}
+            />
+          }
+        >
           <Route element={<RestaurantLayout />}>
-            <Route path="/restaurant" element={<Navigate to="/restaurant/dashboard" replace />} />
-            <Route path="/restaurant/dashboard" element={<RestaurantDashboard />} />
-            <Route path="/restaurant/profile" element={<Profile />} />
-            <Route path="/restaurant/add-donation" element={<AddDonation />} />
-            <Route path="/restaurant/donations" element={<DonationHistory />} />
-            <Route path="/restaurant/donations/:id" element={<DonationDetails />} />
+            <Route
+              path="/restaurant"
+              element={
+                <Navigate
+                  to="/restaurant/dashboard"
+                  replace
+                />
+              }
+            />
+
+            <Route
+              path="/restaurant/dashboard"
+              element={<RestaurantDashboard />}
+            />
+
+            <Route
+              path="/restaurant/profile"
+              element={<Profile />}
+            />
+
+            <Route
+              path="/restaurant/add-donation"
+              element={<AddDonation />}
+            />
+
+            <Route
+              path="/restaurant/donations"
+              element={<DonationHistory />}
+            />
+
+            <Route
+              path="/restaurant/donations/:id"
+              element={<DonationDetails />}
+            />
           </Route>
         </Route>
 
+        {/* Unknown Route */}
+        <Route
+          path="*"
+          element={<Navigate to="/" replace />}
+        />
       </Routes>
     </BrowserRouter>
   );
