@@ -87,7 +87,7 @@ export default function AllocationCenter(){
                     onChange={(e) => setQtys({ ...qtys, [r.requestId]: e.target.value })}
                   />
                   <button
-                    className="bg-olive-600 text-white px-3 py-1 rounded"
+                    className="rounded bg-primary px-3 py-1 text-white transition hover:bg-primary-hover"
                     onClick={() => handleAllocate(r.requestId)}
                     disabled={allocatingId === r.requestId}
                   >

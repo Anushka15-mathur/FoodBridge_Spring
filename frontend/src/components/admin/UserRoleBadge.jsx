@@ -2,19 +2,19 @@ import { Badge } from "../ui/badge";
 
 const roleStyles = {
   ADMIN:
-    "bg-red-100 text-red-700 border-red-300",
+    "bg-danger/10 text-danger border-danger/20",
 
   DONOR:
-    "bg-blue-100 text-blue-700 border-blue-300",
+    "bg-info/10 text-info border-info/20",
 
   NGO:
-    "bg-green-100 text-green-700 border-green-300",
+    "bg-success/10 text-success border-success/20",
 
   RESTAURANT:
-    "bg-orange-100 text-orange-700 border-orange-300",
+    "bg-secondary/10 text-secondary border-secondary/20",
 
   VOLUNTEER:
-    "bg-purple-100 text-purple-700 border-purple-300",
+    "bg-secondary-background text-muted border-border",
 };
 
 export default function UserRoleBadge({ role }) {

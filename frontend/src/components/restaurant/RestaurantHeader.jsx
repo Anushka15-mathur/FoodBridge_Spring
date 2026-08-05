@@ -26,27 +26,23 @@ export default function RestaurantHeader() {
     "Restaurant";
 
   return (
-    <header className="flex items-center justify-between border-b bg-background px-6 py-4">
-
+    <header className="flex items-center justify-between border-b border-border bg-white px-6 py-4">
       <div>
-        <h2 className="text-xl font-bold">
+        <h2 className="text-xl font-bold text-heading">
           Welcome, {displayName}
         </h2>
-
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted">
           RESTAURANT
         </p>
       </div>
-
       <Button
         variant="destructive"
-        className="bg-red-600 text-white hover:bg-red-700"
+        className="border border-danger/20 bg-white text-danger hover:bg-danger/10 hover:text-danger"
         onClick={handleLogout}
       >
         <LogOut className="h-4 w-4" />
         Logout
       </Button>
-
     </header>
   );
 }

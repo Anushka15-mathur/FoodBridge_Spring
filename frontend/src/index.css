@@ -1,21 +1,33 @@
-@import "tailwindcss";
-
 @theme {
   /* Brand Colors */
-  --color-primary: #556b2f;
-  --color-primary-hover: #465926;
-  --color-secondary: #6b8e23;
+  --color-primary: #3F6F3A;
+  --color-primary-hover: #31592E;
+  --color-secondary: #D98C2B;
+  --color-secondary-hover: #C67A1F;
 
-  --color-background: #faf7f0;
-  --color-card: #fffdf8;
-  --color-accent: #c2a878;
+  --color-background: #F8F8F4;
+  --color-secondary-background: #FCFCFA;
+  --color-card: #FFFFFF;
+  --color-accent: #D98C2B;
 
-  --color-success: #4caf50;
-  --color-warning: #d97706;
-  --color-danger: #dc2626;
+  --color-heading: #243224;
+  --color-text: #243224;
+  --color-muted: #6B7280;
+  --color-muted-foreground: #6B7280;
+  --color-border: #E5E7EB;
+  --color-input: #E5E7EB;
+  --color-ring: #3F6F3A;
 
-  --color-heading: #2f3a28;
-  --color-text: #4b5563;
+  --color-success: #3F8F4E;
+  --color-warning: #D98C2B;
+  --color-danger: #C94C4C;
+  --color-info: #4A7AA6;
+
+  --color-foreground: #243224;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary-foreground: #FFFFFF;
+  --color-card-foreground: #243224;
+  --color-popover: #FFFFFF;
 }
 
 html,
