@@ -20,4 +20,8 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
 
     List<Delivery> findByVolunteerAndStatus(Volunteer volunteer,
                                             DeliveryStatus status);
+
+long countByVolunteerAndStatus(
+        Volunteer volunteer,
+        DeliveryStatus status);
 }
