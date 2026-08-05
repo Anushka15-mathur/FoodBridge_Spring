@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import PublicLayout from "../layouts/PublicLayout";
 import AuthLayout from "../layouts/AuthLayout";
@@ -23,11 +23,19 @@ import PendingApproval from "../pages/auth/PendingApproval";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 
 // Admin Pages
-import Dashboard from "../pages/admin/Dashboard";
+import AdminDashboard from "../pages/admin/Dashboard";
 import PendingUsers from "../pages/admin/PendingUsers";
 import AllUsers from "../pages/admin/AllUsers";
 
+// Food Distribution Pages
+import FoodDistributionDashboard from "../pages/admin/food-distribution/FoodDistributionDashboard";
+import FoodDistributionDonations from "../pages/admin/food-distribution/FoodDistributionDonations";
+import DonationRequests from "../pages/admin/food-distribution/DonationRequests";
+import AllocationCenter from "../pages/admin/food-distribution/AllocationCenter";
+import AllocationHistory from "../pages/admin/food-distribution/AllocationHistory";
+
 // Restaurant Pages
+import RestaurantDashboard from "../pages/Restaurant/Dashboard";
 import Profile from "../pages/Restaurant/Profile";
 import AddDonation from "../pages/Restaurant/AddDonation";
 import DonationHistory from "../pages/Restaurant/DonationHistory";
@@ -53,10 +61,11 @@ export default function AppRoutes() {
             <Route path="/how-it-works" element={<HowItWorks />} />
           </Route>
 
-          {/* Authentication */}
+          {/* Authentication Pages */}
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+
             <Route path="/forgot-password" element={<ForgotPassword />} />
           </Route>
         </Route>
@@ -64,24 +73,75 @@ export default function AppRoutes() {
         {/* Registration Flow */}
         <Route element={<AuthLayout />}>
           <Route path="/additional-info" element={<AdditionalInfo />} />
+
           <Route path="/pending-approval" element={<PendingApproval />} />
         </Route>
 
         {/* Protected Admin Routes */}
         <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
           <Route element={<AdminLayout />}>
-            <Route path="/admin/dashboard" element={<Dashboard />} />
+            <Route
+              path="/admin"
+              element={<Navigate to="/admin/dashboard" replace />}
+            />
+
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
             <Route path="/admin/pending-users" element={<PendingUsers />} />
+
             <Route path="/admin/users" element={<AllUsers />} />
+
+            {/* Food Distribution main dashboard */}
+            <Route
+              path="/admin/food-distribution"
+              element={<FoodDistributionDashboard />}
+            />
+
+            {/* View Donations */}
+            <Route
+              path="/admin/food-distribution/donations"
+              element={<FoodDistributionDonations />}
+            />
+
+            {/* View Requests */}
+            <Route
+              path="/admin/food-distribution/requests"
+              element={<DonationRequests />}
+            />
+
+            {/* Allocation Center */}
+            <Route
+              path="/admin/food-distribution/allocation"
+              element={<AllocationCenter />}
+            />
+
+            {/* Allocation History */}
+            <Route
+              path="/admin/food-distribution/history"
+              element={<AllocationHistory />}
+            />
           </Route>
         </Route>
 
         {/* Protected Restaurant Routes */}
         <Route element={<ProtectedRoute allowedRoles={["RESTAURANT"]} />}>
           <Route element={<RestaurantLayout />}>
+            <Route
+              path="/restaurant"
+              element={<Navigate to="/restaurant/dashboard" replace />}
+            />
+
+            <Route
+              path="/restaurant/dashboard"
+              element={<RestaurantDashboard />}
+            />
+
             <Route path="/restaurant/profile" element={<Profile />} />
+
             <Route path="/restaurant/add-donation" element={<AddDonation />} />
+
             <Route path="/restaurant/donations" element={<DonationHistory />} />
+
             <Route
               path="/restaurant/donations/:id"
               element={<RestaurantDonationDetails />}
@@ -93,12 +153,19 @@ export default function AppRoutes() {
         <Route element={<ProtectedRoute allowedRoles={["NGO"]} />}>
           <Route element={<NgoLayout />}>
             <Route path="/ngo/dashboard" element={<NgoDashboard />} />
+
             <Route path="/ngo/donations" element={<Donations />} />
+
             <Route path="/ngo/donations/:id" element={<NgoDonationDetails />} />
+
             <Route path="/ngo/requests" element={<MyRequests />} />
+
             <Route path="/ngo/profile" element={<NgoProfile />} />
           </Route>
         </Route>
+
+        {/* Unknown Route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
