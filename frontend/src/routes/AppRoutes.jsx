@@ -4,6 +4,7 @@ import PublicLayout from "../layouts/PublicLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import AdminLayout from "../layouts/AdminLayout";
 import RestaurantLayout from "../layouts/RestaurantLayout";
+import NgoLayout from "../layouts/NgoLayout";
 
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
@@ -30,13 +31,19 @@ import AllUsers from "../pages/admin/AllUsers";
 import Profile from "../pages/Restaurant/Profile";
 import AddDonation from "../pages/Restaurant/AddDonation";
 import DonationHistory from "../pages/Restaurant/DonationHistory";
-import DonationDetails from "../pages/Restaurant/DonationDetails";
+import RestaurantDonationDetails from "../pages/Restaurant/DonationDetails";
+
+// NGO Pages
+import NgoDashboard from "../pages/ngo/Dashboard";
+import Donations from "../pages/ngo/Donations";
+import NgoDonationDetails from "../pages/ngo/DonationDetails";
+import MyRequests from "../pages/ngo/MyRequests";
+import NgoProfile from "../pages/ngo/Profile";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* Public Pages */}
         <Route element={<PublicRoute />}>
           <Route element={<PublicLayout />}>
@@ -75,10 +82,23 @@ export default function AppRoutes() {
             <Route path="/restaurant/profile" element={<Profile />} />
             <Route path="/restaurant/add-donation" element={<AddDonation />} />
             <Route path="/restaurant/donations" element={<DonationHistory />} />
-            <Route path="/restaurant/donations/:id" element={<DonationDetails />} />
+            <Route
+              path="/restaurant/donations/:id"
+              element={<RestaurantDonationDetails />}
+            />
           </Route>
         </Route>
 
+        {/* Protected NGO Routes */}
+        <Route element={<ProtectedRoute allowedRoles={["NGO"]} />}>
+          <Route element={<NgoLayout />}>
+            <Route path="/ngo/dashboard" element={<NgoDashboard />} />
+            <Route path="/ngo/donations" element={<Donations />} />
+            <Route path="/ngo/donations/:id" element={<NgoDonationDetails />} />
+            <Route path="/ngo/requests" element={<MyRequests />} />
+            <Route path="/ngo/profile" element={<NgoProfile />} />
+          </Route>
+        </Route>
       </Routes>
     </BrowserRouter>
   );

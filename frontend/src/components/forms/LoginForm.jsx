@@ -16,164 +16,137 @@ import PasswordInput from "../auth/PasswordInput";
 import { loginSchema } from "../../validation/authSchema";
 
 export default function LoginForm() {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const { login } = useAuth();
 
-    const { login } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-    } = useForm({
-        resolver: zodResolver(loginSchema),
-        defaultValues: {
-            email: "",
-            password: "",
-            rememberMe: false,
-        },
-    });
+  const onSubmit = async (data) => {
+    try {
+      const response = await login({
+        email: data.email,
+        password: data.password,
+      });
 
-    const onSubmit = async (data) => {
-        try {
+      if (!response.token) {
+        toast.error(response.message);
+        return;
+      }
 
-            const response = await login({
-                email: data.email,
-                password: data.password,
-            });
+      toast.success(response.message);
 
-            if (!response.token) {
-                toast.error(response.message);
-                return;
-            }
+      if (response.user?.role === "ADMIN") {
+        navigate("/admin/dashboard");
+      } else if (response.user?.role === "RESTAURANT") {
+        navigate("/restaurant/profile");
+      } else if (response.user?.role === "NGO") {
+        navigate("/ngo/dashboard");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Login failed. Please try again.";
 
-            toast.success(response.message);
+      toast.error(message);
 
-            if (response.user?.role === "ADMIN") {
-                navigate("/admin/dashboard");
-            } else if (response.user?.role === "RESTAURANT") {
-                navigate("/restaurant/profile");
-            } else {
-                // Dashboards for other roles aren't built yet,
-                // send them back to the home page for now.
-                navigate("/");
-            }
+      console.error(error);
+    }
+  };
 
-        } catch (error) {
+  return (
+    <Card className="border-none shadow-none">
+      <CardContent className="space-y-6">
+        <AuthHeader
+          title="Welcome Back 👋"
+          subtitle="Sign in to continue to FoodBridge"
+        />
 
-            const message =
-                error.response?.data?.message ||
-                "Login failed. Please try again.";
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* Email */}
 
-            toast.error(message);
+          <div>
+            <label className="mb-2 block font-medium">Email Address</label>
 
-            console.error(error);
-        }
-    };
+            <Input
+              type="email"
+              placeholder="Enter your email"
+              {...register("email")}
+            />
 
-    return (
-        <Card className="border-none shadow-none">
-            <CardContent className="space-y-6">
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
 
-                <AuthHeader
-                    title="Welcome Back 👋"
-                    subtitle="Sign in to continue to FoodBridge"
-                />
+          {/* Password */}
 
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-5"
-                >
+          <div>
+            <label className="mb-2 block font-medium">Password</label>
 
-                    {/* Email */}
+            <PasswordInput
+              placeholder="Enter your password"
+              {...register("password")}
+            />
 
-                    <div>
-                        <label className="mb-2 block font-medium">
-                            Email Address
-                        </label>
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
 
-                        <Input
-                            type="email"
-                            placeholder="Enter your email"
-                            {...register("email")}
-                        />
+          {/* Remember Me */}
 
-                        {errors.email && (
-                            <p className="mt-1 text-sm text-red-500">
-                                {errors.email.message}
-                            </p>
-                        )}
-                    </div>
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" {...register("rememberMe")} />
+              Remember Me
+            </label>
 
-                    {/* Password */}
+            <Link
+              to="/forgot-password"
+              className="text-sm text-primary hover:underline"
+            >
+              Forgot Password?
+            </Link>
+          </div>
 
-                    <div>
-                        <label className="mb-2 block font-medium">
-                            Password
-                        </label>
+          {/* Login Button */}
 
-                        <PasswordInput
-                            placeholder="Enter your password"
-                            {...register("password")}
-                        />
+          <Button
+            type="submit"
+            className="w-full bg-primary text-white hover:bg-primary/90"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Logging in..." : "Login"}
+          </Button>
+        </form>
 
-                        {errors.password && (
-                            <p className="mt-1 text-sm text-red-500">
-                                {errors.password.message}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Remember Me */}
-
-                    <div className="flex items-center justify-between">
-
-                        <label className="flex items-center gap-2 text-sm">
-
-                            <input
-                                type="checkbox"
-                                {...register("rememberMe")}
-                            />
-
-                            Remember Me
-
-                        </label>
-
-                        <Link
-                            to="/forgot-password"
-                            className="text-sm text-primary hover:underline"
-                        >
-                            Forgot Password?
-                        </Link>
-
-                    </div>
-
-                    {/* Login Button */}
-
-                    <Button
-                        type="submit"
-                        className="w-full bg-primary text-white hover:bg-primary/90"
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? "Logging in..." : "Login"}
-                    </Button>
-
-                </form>
-
-                <p className="text-center text-sm">
-
-                    Don't have an account?{" "}
-
-                    <Link
-                        to="/register"
-                        className="font-semibold text-primary hover:underline"
-                    >
-                        Register
-                    </Link>
-
-                </p>
-
-            </CardContent>
-        </Card>
-    );
+        <p className="text-center text-sm">
+          Don't have an account?{" "}
+          <Link
+            to="/register"
+            className="font-semibold text-primary hover:underline"
+          >
+            Register
+          </Link>
+        </p>
+      </CardContent>
+    </Card>
+  );
 }
