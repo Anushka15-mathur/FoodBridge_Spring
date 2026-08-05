@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-
 export default function RoleCard({
   icon: Icon,
   title,
@@ -16,16 +14,9 @@ export default function RoleCard({
         {title}
       </h3>
 
-      <p className="mb-8 leading-7 text-text">
+      <p className="leading-7 text-text">
         {description}
       </p>
-
-      <Button
-        variant="outline"
-        className="border-primary text-primary transition-all duration-300 hover:bg-primary hover:text-white"
-      >
-        Learn More
-      </Button>
 
     </div>
   );

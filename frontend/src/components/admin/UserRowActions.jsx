@@ -25,7 +25,6 @@ export default function UserRowActions({
   pageData,
   setPageData,
   refreshUsers,
-  showSuspend = false,
 }) {
   const [loading, setLoading] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -83,52 +82,57 @@ export default function UserRowActions({
     }
   };
 
+  const isPending = user.status === "PENDING";
+  const canSuspend = user.status === "APPROVED" || user.status === "REJECTED";
+
   return (
     <>
-      <div className="flex justify-end gap-2">
-        {/* View */}
+      <div className="flex flex-wrap justify-end gap-2">
         <Button
           size="icon"
           variant="outline"
           onClick={() => setSheetOpen(true)}
+          className="h-11 w-11 min-w-[2.75rem] rounded-xl"
         >
           <Eye className="h-4 w-4" />
         </Button>
 
-        {/* Approve */}
-        <ActionDialog
-          action="approve"
-          loading={loading}
-          onConfirm={() => handleAction("approve")}
-          button={
-            <Button
-              size="icon"
-              disabled={loading}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              <Check className="h-4 w-4" />
-            </Button>
-          }
-        />
+        {isPending && (
+          <>
+            <ActionDialog
+              action="approve"
+              loading={loading}
+              onConfirm={() => handleAction("approve")}
+              button={
+                <Button
+                  size="icon"
+                  disabled={loading}
+                  className="h-11 w-11 min-w-[2.75rem] rounded-xl bg-green-600 hover:bg-green-700"
+                >
+                  <Check className="h-4 w-4" />
+                </Button>
+              }
+            />
 
-        {/* Reject */}
-        <ActionDialog
-          action="reject"
-          loading={loading}
-          onConfirm={() => handleAction("reject")}
-          button={
-            <Button
-              size="icon"
-              variant="destructive"
-              disabled={loading}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          }
-        />
+            <ActionDialog
+              action="reject"
+              loading={loading}
+              onConfirm={() => handleAction("reject")}
+              button={
+                <Button
+                  size="icon"
+                  variant="destructive"
+                  disabled={loading}
+                  className="h-11 w-11 min-w-[2.75rem] rounded-xl"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              }
+            />
+          </>
+        )}
 
-        {/* Suspend */}
-        {showSuspend && (
+        {canSuspend && (
           <ActionDialog
             action="suspend"
             loading={loading}
@@ -138,6 +142,7 @@ export default function UserRowActions({
                 size="icon"
                 variant="secondary"
                 disabled={loading}
+                className="h-11 w-11 min-w-[2.75rem] rounded-xl"
               >
                 <Ban className="h-4 w-4" />
               </Button>
