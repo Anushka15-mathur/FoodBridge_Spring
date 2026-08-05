@@ -58,7 +58,7 @@ export default function DeliveryTracking(){
           className="border px-2 py-1 mr-2"
         />
         <button
-          className="bg-olive-600 text-white px-3 py-1 rounded"
+          className="rounded bg-primary px-3 py-1 text-white transition hover:bg-primary-hover"
           onClick={handleAssign}
           disabled={loading}
         >

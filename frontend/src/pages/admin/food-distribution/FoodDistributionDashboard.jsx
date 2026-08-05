@@ -198,18 +198,18 @@ export default function FoodDistributionDashboard() {
       <div className="rounded-[32px] border border-slate-200 bg-white/80 p-6 shadow-sm">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-olive-700">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
               Food Distribution
             </p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-900">
+            <h1 className="mt-2 text-3xl font-semibold text-heading">
               Distribution Overview
             </h1>
-            <p className="mt-3 max-w-2xl text-slate-600">
+            <p className="mt-3 max-w-2xl text-muted">
               A modern overview of donations, NGO requests, and allocation activity in the FoodBridge admin panel.
             </p>
           </div>
 
-          <div className="inline-flex items-center rounded-3xl bg-olive-50 px-4 py-3 text-olive-800 shadow-sm">
+          <div className="inline-flex items-center rounded-3xl bg-primary/10 px-4 py-3 text-primary shadow-sm">
             <PieChart className="mr-2 h-5 w-5" />
             <span className="text-sm font-medium">FoodBridge</span>
           </div>
@@ -221,14 +221,14 @@ export default function FoodDistributionDashboard() {
             return (
               <div
                 key={stat.label}
-                className="group rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-olive-300"
+                className="group rounded-3xl border border-border bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary-hover"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-slate-500">{stat.label}</p>
                     <p className="mt-3 text-3xl font-bold text-slate-900">{stat.value}</p>
                   </div>
-                  <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-olive-50 text-olive-700 transition duration-300 group-hover:scale-105">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-primary/10 text-primary transition duration-300 group-hover:scale-105">
                     <Icon className="h-7 w-7" />
                   </div>
                 </div>
@@ -248,7 +248,7 @@ export default function FoodDistributionDashboard() {
                 Quick access to the food distribution workflow.
               </p>
             </div>
-            <div className="rounded-3xl bg-olive-50 px-4 py-2 text-sm font-semibold text-olive-800">
+            <div className="rounded-3xl bg-secondary-background px-4 py-2 text-sm font-semibold text-secondary">
               Start here
             </div>
           </div>
@@ -261,18 +261,18 @@ export default function FoodDistributionDashboard() {
                   key={card.title}
                   type="button"
                   onClick={() => navigate(card.path)}
-                  className="group flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-6 text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-olive-300"
+                  className="group flex flex-col justify-between rounded-3xl border border-border bg-white p-6 text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary-hover"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900">{card.title}</h3>
                       <p className="mt-2 text-sm text-slate-500">{card.description}</p>
                     </div>
-                    <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-olive-50 text-olive-700 transition duration-300 group-hover:scale-110">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-primary/10 text-primary transition duration-300 group-hover:scale-110">
                       <Icon className="h-7 w-7" />
                     </div>
                   </div>
-                  <span className="mt-6 inline-flex w-max items-center rounded-full border border-olive-100 bg-olive-50 px-4 py-2 text-sm font-semibold text-olive-800 transition group-hover:bg-olive-100">
+                  <span className="mt-6 inline-flex w-max items-center rounded-full border border-border bg-secondary-background px-4 py-2 text-sm font-semibold text-primary transition group-hover:bg-secondary-background">
                     Open
                   </span>
                 </button>
@@ -289,7 +289,7 @@ export default function FoodDistributionDashboard() {
                 Track the latest donation, request, and allocation updates.
               </p>
             </div>
-            <div className="rounded-3xl bg-olive-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-olive-700">
+            <div className="rounded-3xl bg-secondary-background px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-secondary">
               Live feed
             </div>
           </div>
@@ -312,10 +312,10 @@ export default function FoodDistributionDashboard() {
                 return (
                   <div
                     key={item.id}
-                    className="group flex items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 transition hover:-translate-y-0.5 hover:border-olive-300 hover:bg-white hover:shadow-sm"
+                    className="group flex items-center justify-between gap-4 rounded-3xl border border-border bg-secondary-background p-4 transition hover:-translate-y-0.5 hover:border-primary-hover hover:bg-white hover:shadow-sm"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-olive-50 text-olive-700 transition duration-300 group-hover:scale-105">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-primary/10 text-primary transition duration-300 group-hover:scale-105">
                         <Icon className="h-6 w-6" />
                       </div>
                       <div>

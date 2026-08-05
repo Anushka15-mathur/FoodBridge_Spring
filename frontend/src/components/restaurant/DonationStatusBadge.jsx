@@ -3,28 +3,28 @@ import { Badge } from "../ui/badge";
 const statusStyles = {
 
   AVAILABLE:
-    "bg-green-100 text-green-700 border-green-300",
+    "bg-success/10 text-success border-success/20",
 
   REQUESTED:
-    "bg-yellow-100 text-yellow-700 border-yellow-300",
+    "bg-warning/10 text-warning border-warning/20",
 
   PARTIALLY_ALLOCATED:
-    "bg-yellow-100 text-yellow-700 border-yellow-300",
+    "bg-warning/10 text-warning border-warning/20",
 
   FULLY_ALLOCATED:
-    "bg-blue-100 text-blue-700 border-blue-300",
+    "bg-info/10 text-info border-info/20",
 
   PICKED_UP:
-    "bg-blue-100 text-blue-700 border-blue-300",
+    "bg-info/10 text-info border-info/20",
 
   DELIVERED:
-    "bg-teal-100 text-teal-700 border-teal-300",
+    "bg-success/10 text-success border-success/20",
 
   EXPIRED:
-    "bg-gray-100 text-gray-700 border-gray-300",
+    "bg-secondary-background text-muted border-border",
 
   CANCELLED:
-    "bg-red-100 text-red-700 border-red-300",
+    "bg-danger/10 text-danger border-danger/20",
 
 };
 

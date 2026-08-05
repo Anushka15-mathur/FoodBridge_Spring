@@ -311,7 +311,7 @@ export default function AddDonation() {
                     <Button
                         type="submit"
                         disabled={submitting}
-                        className="bg-emerald-600 text-white hover:bg-emerald-700"
+                        className="bg-primary text-white hover:bg-primary-hover"
                     >
                         {submitting ? "Adding..." : "Add Donation"}
                     </Button>
