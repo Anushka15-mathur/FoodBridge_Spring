@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -8,6 +9,8 @@ import {
 } from "lucide-react";
 
 export default function Hero() {
+  const navigate = useNavigate();
+
   return (
     <section
       id="home"
@@ -41,16 +44,20 @@ export default function Hero() {
           {/* Buttons */}
           <div className="mb-10 flex flex-wrap gap-4">
             <Button
+              type="button"
               size="lg"
               className="bg-primary text-white transition-all duration-300 hover:opacity-90"
+              onClick={() => navigate("/login")}
             >
               Donate Food
             </Button>
 
             <Button
-              variant="outline"
+              type="button"
               size="lg"
+              variant="outline"
               className="border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
+              onClick={() => navigate("/register")}
             >
               Join FoodBridge
               <ArrowRight className="ml-2 h-4 w-4" />

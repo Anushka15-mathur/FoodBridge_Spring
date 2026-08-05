@@ -201,17 +201,9 @@ export default function FoodDistributionDashboard() {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-olive-700">
               Food Distribution
             </p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-900">
-              Distribution Overview
-            </h1>
-            <p className="mt-3 max-w-2xl text-slate-600">
-              A modern overview of donations, NGO requests, and allocation activity in the FoodBridge admin panel.
-            </p>
-          </div>
-
-          <div className="inline-flex items-center rounded-3xl bg-olive-50 px-4 py-3 text-olive-800 shadow-sm">
-            <PieChart className="mr-2 h-5 w-5" />
-            <span className="text-sm font-medium">FoodBridge</span>
+              <h1 className="mt-2 text-3xl font-semibold text-olive-800">
+                Distribution Overview
+              </h1>
           </div>
         </div>
 
