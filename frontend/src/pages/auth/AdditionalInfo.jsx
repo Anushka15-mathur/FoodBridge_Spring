@@ -170,7 +170,12 @@ export default function AdditionalInfo() {
   }
 
   if (role === "RESTAURANT" && user?.profileCompleted) {
-    return <Navigate to="/restaurant/dashboard" replace />;
+    return (
+      <Navigate
+        to={user.status === "APPROVED" ? "/restaurant/dashboard" : "/pending-approval"}
+        replace
+      />
+    );
   }
 
   return (
