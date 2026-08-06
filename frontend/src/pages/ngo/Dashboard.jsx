@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Package,
   Clock3,
@@ -12,6 +13,7 @@ import DashboardStatCard from "../../components/ngo/DashboardStatCard";
 import ngoService from "../../services/ngoService";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [dashboard, setDashboard] = useState({
     ngoName: "",
     availableDonations: 0,
@@ -37,23 +39,17 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-
       {/* Header */}
 
       <div>
-        <h1 className="text-4xl font-bold tracking-tight">
-          Welcome 👋
-        </h1>
+        <h1 className="text-4xl font-bold tracking-tight">Welcome 👋</h1>
 
-        <p className="mt-2 text-gray-500">
-          {dashboard.ngoName}
-        </p>
+        <p className="mt-2 text-gray-500">{dashboard.ngoName}</p>
       </div>
 
       {/* Stats */}
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-
         <DashboardStatCard
           title="Available Donations"
           value={dashboard.availableDonations}
@@ -95,53 +91,48 @@ export default function Dashboard() {
           icon={BarChart3}
           color="bg-blue-600"
         />
-
       </div>
 
       {/* Quick Actions */}
 
       <div className="rounded-2xl border bg-white p-6 shadow-sm">
-
-        <h2 className="text-xl font-semibold mb-5">
-          Quick Actions
-        </h2>
+        <h2 className="text-xl font-semibold mb-5">Quick Actions</h2>
 
         <div className="grid gap-4 md:grid-cols-3">
-
-          <button className="rounded-xl border p-6 text-left transition hover:border-green-600 hover:shadow">
-            <h3 className="font-semibold">
-              Browse Donations
-            </h3>
+          <button
+            onClick={() => navigate("/ngo/donations")}
+            className="rounded-xl border p-6 text-left transition hover:border-green-600 hover:shadow"
+          >
+            <h3 className="font-semibold">Browse Donations</h3>
 
             <p className="mt-2 text-sm text-gray-500">
               View food donations available nearby.
             </p>
           </button>
 
-          <button className="rounded-xl border p-6 text-left transition hover:border-blue-600 hover:shadow">
-            <h3 className="font-semibold">
-              My Requests
-            </h3>
+          <button
+            onClick={() => navigate("/ngo/requests")}
+            className="rounded-xl border p-6 text-left transition hover:border-blue-600 hover:shadow"
+          >
+            <h3 className="font-semibold">My Requests</h3>
 
             <p className="mt-2 text-sm text-gray-500">
               Track all donation requests.
             </p>
           </button>
 
-          <button className="rounded-xl border p-6 text-left transition hover:border-orange-600 hover:shadow">
-            <h3 className="font-semibold">
-              Edit Profile
-            </h3>
+          <button
+            onClick={() => navigate("/ngo/profile")}
+            className="rounded-xl border p-6 text-left transition hover:border-orange-600 hover:shadow"
+          >
+            <h3 className="font-semibold">Edit Profile</h3>
 
             <p className="mt-2 text-sm text-gray-500">
               Update NGO information.
             </p>
           </button>
-
         </div>
-
       </div>
-
     </div>
   );
 }
