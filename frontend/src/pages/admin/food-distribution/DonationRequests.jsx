@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getDonationRequests, allocateDonation } from '../../../services/foodDistributionService';
+import { Button } from '../../../components/ui/button';
+import { Input } from '../../../components/ui/input';
 
 export default function DonationRequests(){
   const [requests, setRequests] = useState([]);
@@ -64,20 +66,30 @@ export default function DonationRequests(){
                   <td className="px-4 py-3">{r.requestedQuantity}</td>
                   <td className="px-4 py-3">{new Date(r.requestedAt).toLocaleString()}</td>
                   <td className="px-4 py-3">
-                    <input
-                      type="number"
-                      step="0.01"
-                      placeholder="qty"
-                      className="mr-2 border px-2 py-1"
-                      onChange={(e) => setAllocQty({ ...allocQty, [r.requestId]: e.target.value })}
-                    />
-                    <button
-                      className="bg-olive-600 text-white px-3 py-1 rounded"
-                      onClick={() => handleAllocate(r.requestId)}
-                      disabled={allocatingId === r.requestId}
-                    >
-                      {allocatingId === r.requestId ? 'Allocating...' : 'Approve & Allocate'}
-                    </button>
+                    <div className="grid gap-3">
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="Quantity"
+                        value={allocQty[r.requestId] ?? ""}
+                        onChange={(e) => setAllocQty({
+                          ...allocQty,
+                          [r.requestId]: e.target.value,
+                        })}
+                        className="w-full"
+                      />
+
+                      <Button
+                        type="button"
+                        onClick={() => handleAllocate(r.requestId)}
+                        className="w-full bg-primary text-white hover:bg-primary/90"
+                        disabled={allocatingId === r.requestId}
+                      >
+                        {allocatingId === r.requestId
+                          ? "Allocating..."
+                          : "Approve & Allocate"}
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}

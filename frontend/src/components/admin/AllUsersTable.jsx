@@ -237,7 +237,6 @@ export default function AllUsersTable({
                                             pageData={pageData}
                                             setPageData={setPageData}
                                             refreshUsers={refreshUsers}
-                                            showSuspend={user.status === "APPROVED"}
                                         />
 
                                     </TableCell>

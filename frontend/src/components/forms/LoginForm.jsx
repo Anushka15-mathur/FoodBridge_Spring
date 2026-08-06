@@ -47,29 +47,41 @@ export default function LoginForm() {
 
       toast.success(response.message);
 
-      if (response.user?.role === "ADMIN") {
-        navigate("/admin/dashboard");
+     if (response.user?.role === "ADMIN") {
 
-      } else if (response.user?.role === "RESTAURANT") {
+  navigate("/admin/dashboard");
 
-        if (response.user.profileCompleted) {
-          navigate("/restaurant/dashboard");
-        } else {
-          navigate("/additional-info", {
-            replace: true,
-            state: { role: "RESTAURANT" },
-          });
-        }
+} else if (response.user?.role === "RESTAURANT") {
 
-      } else if (response.user?.role === "NGO") {
+  if (response.user.profileCompleted) {
+    navigate("/restaurant/dashboard");
+  } else {
+    navigate("/additional-info", {
+      replace: true,
+      state: { role: "RESTAURANT" },
+    });
+  }
 
-        navigate("/ngo/dashboard");
+} else if (response.user?.role === "NGO") {
 
-      } else {
+  navigate("/ngo/dashboard");
 
-        navigate("/");
+} else if (response.user?.role === "VOLUNTEER") {
 
-      }
+  if (response.user.profileCompleted) {
+    navigate("/volunteer/dashboard");
+  } else {
+    navigate("/additional-info", {
+      replace: true,
+      state: { role: "VOLUNTEER" },
+    });
+  }
+
+} else {
+
+  navigate("/");
+
+}
 
     } catch (error) {
 

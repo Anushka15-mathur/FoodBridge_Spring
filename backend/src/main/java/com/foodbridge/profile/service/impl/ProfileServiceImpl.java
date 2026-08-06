@@ -159,6 +159,8 @@ public class ProfileServiceImpl implements ProfileService {
 
         Volunteer volunteer = Volunteer.builder()
         .user(user)
+        .currentLatitude(request.getCurrentLatitude())
+        .currentLongitude(request.getCurrentLongitude())
         .maxDeliveryDistance(request.getMaxDeliveryDistance())
         .drivingLicensePath(drivingLicensePath)
         .identityProofPath(identityProofPath)

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getAllDonations } from '../../../services/foodDistributionService';
+import StatusBadge from '../../../components/ui/StatusBadge';
 
 export default function AllDonations(){
   const [donations, setDonations] = useState([]);
@@ -49,7 +50,7 @@ export default function AllDonations(){
                   <td className="px-4 py-3">{d.quantity}</td>
                   <td className="px-4 py-3">{d.remainingQuantity}</td>
                   <td className="px-4 py-3">{new Date(d.expiryTime).toLocaleString()}</td>
-                  <td className="px-4 py-3">{String(d.status)}</td>
+                  <td className="px-4 py-3"><StatusBadge status={d.status} /></td>
                 </tr>
               ))}
             </tbody>
