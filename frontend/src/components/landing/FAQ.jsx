@@ -19,8 +19,6 @@ export default function FAQ() {
         />
 
         <Accordion
-          type="single"
-          collapsible
           className="w-full rounded-3xl bg-card p-6 shadow-md"
         >
 
