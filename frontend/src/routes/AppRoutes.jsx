@@ -5,6 +5,7 @@ import AuthLayout from "../layouts/AuthLayout";
 import AdminLayout from "../layouts/AdminLayout";
 import RestaurantLayout from "../layouts/RestaurantLayout";
 import NgoLayout from "../layouts/NgoLayout";
+import VolunteerLayout from "../layouts/VolunteerLayout";
 
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
@@ -47,6 +48,13 @@ import Donations from "../pages/ngo/Donations";
 import NgoDonationDetails from "../pages/ngo/DonationDetails";
 import MyRequests from "../pages/ngo/MyRequests";
 import NgoProfile from "../pages/ngo/Profile";
+
+//Volunteer Pages
+import VolunteerDashboard from "../pages/volunteer/Dashboard";
+import VolunteerProfile from "../pages/volunteer/Profile";
+import VolunteerDeliveries from "../pages/volunteer/Deliveries";
+import VolunteerDeliveryDetails from "../pages/volunteer/DeliveryDetails";
+import VolunteerHistory from "../pages/volunteer/History";
 
 export default function AppRoutes() {
   return (
@@ -148,6 +156,36 @@ export default function AppRoutes() {
             />
           </Route>
         </Route>
+
+        {/* Protected Volunteer Routes */}
+<Route element={<ProtectedRoute allowedRoles={["VOLUNTEER"]} />}>
+  <Route element={<VolunteerLayout />}>
+    <Route
+      path="/volunteer/dashboard"
+      element={<VolunteerDashboard />}
+    />
+
+    <Route
+      path="/volunteer/profile"
+      element={<VolunteerProfile />}
+    />
+
+    <Route
+      path="/volunteer/deliveries"
+      element={<VolunteerDeliveries />}
+    />
+
+    <Route
+      path="/volunteer/deliveries/:id"
+      element={<VolunteerDeliveryDetails />}
+    />
+
+    <Route
+      path="/volunteer/history"
+      element={<VolunteerHistory />}
+    />
+  </Route>
+</Route>
 
         {/* Protected NGO Routes */}
         <Route element={<ProtectedRoute allowedRoles={["NGO"]} />}>

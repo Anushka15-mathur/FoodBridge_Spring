@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { assignDelivery, getDelivery } from '../../../services/foodDistributionService';
+import StatusBadge from '../../../components/ui/StatusBadge';
 
 export default function DeliveryTracking(){
   const [allocId, setAllocId] = useState('');
@@ -71,7 +72,7 @@ export default function DeliveryTracking(){
       {delivery && (
         <div className="bg-white p-4 rounded shadow">
           <div>Delivery ID: {delivery.id}</div>
-          <div>Status: {String(delivery.status)}</div>
+          <div>Status: <StatusBadge status={delivery.status} /></div>
           <div>Assigned At: {new Date(delivery.assignedAt).toLocaleString()}</div>
           <div>Pickup Time: {delivery.pickupTime ? new Date(delivery.pickupTime).toLocaleString() : '—'}</div>
           <div>Delivered Time: {delivery.deliveredTime ? new Date(delivery.deliveredTime).toLocaleString() : '—'}</div>
