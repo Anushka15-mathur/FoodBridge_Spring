@@ -320,6 +320,7 @@ public NgoProfileResponse getProfile() {
             .placeId(ngo.getPlaceId())
             .email(user.getEmail())
             .phone(user.getPhone())
+            .logoPath(ngo.getLogoPath())   
             .build();
 }
 
