@@ -12,6 +12,7 @@ export default function ForgotPassword() {
 
     const [step, setStep] = useState(1);
     const [email, setEmail] = useState("");
+    const [otp, setOtp] = useState("");
 
     return (
         <div className="w-full">
@@ -26,6 +27,7 @@ export default function ForgotPassword() {
             {step === 2 && (
                 <OtpVerification
                     email={email}
+                    setOtp={setOtp}
                     setStep={setStep}
                 />
             )}
@@ -33,6 +35,7 @@ export default function ForgotPassword() {
             {step === 3 && (
                 <ResetPasswordForm
                     email={email}
+                    otp={otp}
                     setStep={setStep}
                 />
             )}

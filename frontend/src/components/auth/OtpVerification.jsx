@@ -15,7 +15,6 @@ import { toast } from "sonner";
 
 export default function OtpVerification({
     email,
-    otp,
     setOtp,
     setStep,
 }) {

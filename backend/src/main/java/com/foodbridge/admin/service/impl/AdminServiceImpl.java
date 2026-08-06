@@ -4,7 +4,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.foodbridge.admin.dto.AdminUserDetailsResponse;
 import com.foodbridge.admin.dto.AdminUserSummaryResponse;
@@ -13,6 +15,7 @@ import com.foodbridge.admin.mapper.AdminMapper;
 import com.foodbridge.admin.service.AdminService;
 import com.foodbridge.common.dto.PageResponse;
 import com.foodbridge.common.util.PageResponseUtil;
+import com.foodbridge.email.service.EmailService;
 import com.foodbridge.exception.ResourceNotFoundException;
 import com.foodbridge.user.entity.User;
 import com.foodbridge.user.enums.AccountStatus;
@@ -24,9 +27,11 @@ import com.foodbridge.volunteer.repository.VolunteerRepository;
 import com.foodbridge.donor.repository.DonorRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdminServiceImpl implements AdminService {
 
 	private final UserRepository userRepository;
@@ -36,6 +41,7 @@ public class AdminServiceImpl implements AdminService {
 	private final NgoRepository ngoRepository;
 	private final VolunteerRepository volunteerRepository;
 	private final DonorRepository donorRepository;
+	private final EmailService emailService;
 
 	@Override
 	public PageResponse<AdminUserSummaryResponse> getAllUsers(
@@ -220,6 +226,22 @@ public class AdminServiceImpl implements AdminService {
 		user.setStatus(status);
 
 		userRepository.save(user);
+
+		sendStatusNotification(user, status);
+	}
+
+	private void sendStatusNotification(User user, AccountStatus status) {
+		try {
+			switch (status) {
+				case APPROVED -> emailService.sendApprovalEmail(user.getEmail(), user.getFirstName());
+				case REJECTED -> emailService.sendRejectionEmail(user.getEmail(), user.getFirstName());
+				case SUSPENDED -> emailService.sendSuspensionEmail(user.getEmail(), user.getFirstName());
+				default -> {
+				}
+			}
+		} catch (MailException ex) {
+			log.error("Failed to send status notification email to {} for status {}", user.getEmail(), status, ex);
+		}
 	}
 
 	@Override
