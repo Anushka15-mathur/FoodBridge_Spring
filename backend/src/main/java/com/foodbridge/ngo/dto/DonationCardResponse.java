@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.foodbridge.donation.enums.FoodType;
+import com.foodbridge.donation.enums.DonationStatus;
 import com.foodbridge.donation.enums.QuantityUnit;
 
 import lombok.AllArgsConstructor;
@@ -27,6 +28,8 @@ public class DonationCardResponse {
 
     private BigDecimal quantity;
 
+    private BigDecimal remainingQuantity;
+
     private QuantityUnit quantityUnit;
 
     private FoodType foodType;
@@ -34,4 +37,6 @@ public class DonationCardResponse {
     private String pickupAddress;
 
     private LocalDateTime expiryTime;
+
+    private DonationStatus status;
 }

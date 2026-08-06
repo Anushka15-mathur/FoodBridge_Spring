@@ -15,6 +15,7 @@ import com.foodbridge.donation.entity.FoodDonation;
 import com.foodbridge.donation.repository.DonationImageRepository;
 import com.foodbridge.donation.repository.FoodDonationRepository;
 import com.foodbridge.donation.service.RestaurantDonationService;
+import com.foodbridge.donation.service.DonationExpiryService;
 import com.foodbridge.exception.ResourceNotFoundException;
 import com.foodbridge.restaurant.entity.Restaurant;
 import com.foodbridge.restaurant.repository.RestaurantRepository;
@@ -36,6 +37,8 @@ public class RestaurantDonationServiceImpl implements RestaurantDonationService 
     private final FoodDonationRepository foodDonationRepository;
 
     private final DonationImageRepository donationImageRepository;
+
+    private final DonationExpiryService donationExpiryService;
 
     @Override
     public DonationResponseDto createDonation(CreateDonationDto request) {
@@ -141,6 +144,8 @@ public class RestaurantDonationServiceImpl implements RestaurantDonationService 
 
     @Override
     public List<DonationResponseDto> getDonationHistoryForRestaurant() {
+
+        donationExpiryService.expireDonations();
 
         com.foodbridge.user.dto.response.UserResponse current = authService.getCurrentUser();
 

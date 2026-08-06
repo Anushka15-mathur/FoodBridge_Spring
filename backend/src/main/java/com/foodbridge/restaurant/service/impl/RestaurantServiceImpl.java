@@ -17,6 +17,7 @@ import com.foodbridge.auth.service.AuthService;
 import com.foodbridge.donation.entity.FoodDonation;
 import com.foodbridge.donation.enums.DonationStatus;
 import com.foodbridge.donation.repository.FoodDonationRepository;
+import com.foodbridge.donation.service.DonationExpiryService;
 import com.foodbridge.exception.BadRequestException;
 import com.foodbridge.exception.ResourceNotFoundException;
 import com.foodbridge.restaurant.dto.ApproveRequestDto;
@@ -45,10 +46,13 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final DonationRequestRepository donationRequestRepository;
     private final DonationAllocationRepository donationAllocationRepository;
     private final FoodDonationRepository foodDonationRepository;
+    private final DonationExpiryService donationExpiryService;
 
     @Override
     @Transactional(readOnly = true)
     public RestaurantDashboardResponse getDashboard() {
+        donationExpiryService.expireDonations();
+
         Restaurant restaurant = getCurrentRestaurant();
 
         List<FoodDonation> donations = foodDonationRepository
@@ -117,6 +121,8 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     @Transactional(readOnly = true)
     public List<RestaurantRequestResponse> getDonationRequests() {
+        donationExpiryService.expireDonations();
+
         Restaurant restaurant = getCurrentRestaurant();
 
         return donationRequestRepository.findByDonation_Restaurant(restaurant)
@@ -136,6 +142,8 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public String approveDonationRequest(Long requestId, ApproveRequestDto request) {
+        donationExpiryService.expireDonations();
+
         Restaurant restaurant = getCurrentRestaurant();
         DonationRequest donationRequest = getOwnedRequest(requestId, restaurant);
 
@@ -145,6 +153,11 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         FoodDonation donation = donationRequest.getDonation();
         BigDecimal requestedQuantity = donationRequest.getRequestedQuantity();
+
+        if (!donationExpiryService.isRequestable(donation)) {
+            throw new BadRequestException(
+                    "Donation is no longer available for allocation.");
+        }
 
         if (donation.getRemainingQuantity().compareTo(requestedQuantity) < 0) {
             throw new BadRequestException("Insufficient remaining quantity.");

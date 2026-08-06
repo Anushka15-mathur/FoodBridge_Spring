@@ -56,4 +56,25 @@ public class Volunteer extends BaseEntity {
 
     @Column(length = 255)
     private String identityProofPath;
+
+    @Column(length = 50)
+    private String drivingLicenseNumber;
+
+    @Column(length = 20)
+    private String aadhaarNumber;
+
+    @Column(length = 15)
+    private String emergencyContact;
+
+    @Column(length = 500)
+    private String address;
+
+    @Column(length = 100)
+    private String city;
+
+    @Column(length = 100)
+    private String state;
+
+    @Column(length = 10)
+    private String pincode;
 }
