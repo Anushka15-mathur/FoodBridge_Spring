@@ -20,7 +20,7 @@ export default function Donations() {
 
   useEffect(() => {
     const filtered = donations.filter((donation) =>
-      donation.foodName
+      donation.title
         ?.toLowerCase()
         .includes(search.toLowerCase())
     );
@@ -33,10 +33,13 @@ export default function Donations() {
 
     try {
       const data = await ngoService.getAvailableDonations();
+
+      console.log("Available Donations:", data);
+
       setDonations(data);
       setFilteredDonations(data);
     } catch (err) {
-      console.error(err);
+      console.error("Error loading donations:", err);
     } finally {
       setLoading(false);
     }
