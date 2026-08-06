@@ -1,7 +1,6 @@
 import api from "./api";
 
 const ngoService = {
-
   getDashboard: async () => {
     const response = await api.get("/ngo/dashboard");
     return response.data;
@@ -33,20 +32,28 @@ const ngoService = {
   },
 
   requestDonation: async (id, data) => {
-    const response = await api.post(
-      `/ngo/donations/${id}/request`,
-      data
-    );
+    const response = await api.post(`/ngo/donations/${id}/request`, data);
     return response.data;
   },
 
   cancelRequest: async (id) => {
-    const response = await api.put(
-      `/ngo/requests/${id}/cancel`
-    );
+    const response = await api.put(`/ngo/requests/${id}/cancel`);
     return response.data;
   },
 
+  getAvailableVolunteers: async () => {
+    const response = await api.get("/ngo/volunteers");
+    return response.data;
+  },
+
+  assignVolunteer: async (requestId, volunteerId) => {
+    const response = await api.post("/ngo/assign-volunteer", {
+      requestId,
+      volunteerId,
+    });
+
+    return response.data;
+  },
 };
 
 export default ngoService;

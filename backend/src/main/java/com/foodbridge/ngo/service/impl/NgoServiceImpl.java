@@ -30,6 +30,21 @@ import com.foodbridge.user.repository.UserRepository;
 import com.foodbridge.ngo.dto.NgoProfileResponse;
 import com.foodbridge.ngo.dto.UpdateNgoProfileDto;
 
+import com.foodbridge.ngo.dto.VolunteerListResponse;
+import com.foodbridge.volunteer.entity.Volunteer;
+import com.foodbridge.volunteer.repository.VolunteerRepository;
+
+import com.foodbridge.allocation.repository.DonationAllocationRepository;
+import com.foodbridge.delivery.repository.DeliveryRepository;
+import com.foodbridge.allocation.entity.DonationAllocation;
+import com.foodbridge.delivery.entity.Delivery;
+
+import java.time.LocalDateTime;
+
+import com.foodbridge.ngo.dto.AssignVolunteerRequest;
+import com.foodbridge.delivery.enums.DeliveryStatus;
+
+
 @Service
 public class NgoServiceImpl implements NgoService {
 
@@ -47,6 +62,15 @@ public class NgoServiceImpl implements NgoService {
 
     @Autowired
     private DonationRequestRepository donationRequestRepository;
+
+    @Autowired
+    private VolunteerRepository volunteerRepository;
+
+    @Autowired
+    private DonationAllocationRepository allocationRepository;
+
+   @Autowired
+   private DeliveryRepository deliveryRepository;
 
     @Override
     public NgoDashboardResponse getDashboard() {
@@ -351,5 +375,63 @@ public String updateProfile(UpdateNgoProfileDto request) {
     userRepository.save(user);
 
     return "NGO profile updated successfully.";
+
+}
+
+@Override
+@Transactional(readOnly = true)
+public List<VolunteerListResponse> getAvailableVolunteers() {
+
+    List<Volunteer> volunteers =
+            volunteerRepository.findByAvailableTrueAndVerifiedTrueAndIsDeletedFalse();
+
+    return volunteers.stream()
+            .map(volunteer -> VolunteerListResponse.builder()
+                    .volunteerId(volunteer.getId())
+                    .fullName(
+                            volunteer.getUser().getFirstName()
+                                    + " "
+                                    + volunteer.getUser().getLastName())
+                    .email(volunteer.getUser().getEmail())
+                    .phone(volunteer.getUser().getPhone())
+                    .build())
+            .toList();
+}
+
+@Override
+@Transactional
+public String assignVolunteer(AssignVolunteerRequest request) {
+
+   DonationRequest donationRequest = donationRequestRepository
+        .findById(request.getRequestId())
+        .orElseThrow(() ->
+                new ResourceNotFoundException("Donation request not found."));
+
+DonationAllocation allocation = allocationRepository
+        .findByDonationRequest(donationRequest)
+        .orElseThrow(() ->
+                new ResourceNotFoundException("Allocation not found."));
+
+    Volunteer volunteer = volunteerRepository.findById(request.getVolunteerId())
+            .orElseThrow(() ->
+                    new ResourceNotFoundException("Volunteer not found."));
+
+    if (!Boolean.TRUE.equals(volunteer.getAvailable())) {
+        throw new IllegalArgumentException("Volunteer is not available.");
+    }
+
+    Delivery delivery = Delivery.builder()
+            .allocation(allocation)
+            .volunteer(volunteer)
+            .status(DeliveryStatus.ASSIGNED)
+            .assignedAt(LocalDateTime.now())
+            .build();
+
+    deliveryRepository.save(delivery);
+
+    volunteer.setAvailable(false);
+    volunteerRepository.save(volunteer);
+
+    return "Volunteer assigned successfully.";
 }
 }

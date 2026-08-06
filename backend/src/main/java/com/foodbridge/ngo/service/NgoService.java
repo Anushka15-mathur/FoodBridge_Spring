@@ -9,6 +9,8 @@ import com.foodbridge.ngo.dto.MyDonationRequestResponse;
 import com.foodbridge.ngo.dto.NgoDashboardResponse;
 import com.foodbridge.ngo.dto.NgoProfileResponse;
 import com.foodbridge.ngo.dto.UpdateNgoProfileDto;
+import com.foodbridge.ngo.dto.VolunteerListResponse;
+import com.foodbridge.ngo.dto.AssignVolunteerRequest;
 
 public interface NgoService {
 
@@ -27,4 +29,8 @@ public interface NgoService {
     NgoProfileResponse getProfile();
 
     String updateProfile(UpdateNgoProfileDto request);
+
+    List<VolunteerListResponse> getAvailableVolunteers();
+
+    String assignVolunteer(AssignVolunteerRequest request);
 }
