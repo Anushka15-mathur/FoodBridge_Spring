@@ -3,12 +3,18 @@ import { useEffect, useRef } from "react";
 export default function OtpInput({ value = "", onChange, length = 6, error = false, disabled = false, className = "", }) {
     const inputRefs = useRef([]);
 
-    const otp = value.padEnd(length).split("").slice(0, length);
+    // Empty slots must be empty strings. Padding with spaces makes every input
+    // already contain one character, so a manually typed digit is rejected by
+    // the single-digit validation while paste bypasses this handler.
+    const otp = Array.from(
+        { length },
+        (_, index) => value[index] || ""
+    );
 
     const updateOtp = (index, digit) => {
         const newOtp = [...otp];
         newOtp[index] = digit;
-        onChange(newOtp.join("").trimEnd());
+        onChange(newOtp.join(""));
     };
 
     const handleChange = (e, index) => {
@@ -84,6 +90,7 @@ export default function OtpInput({ value = "", onChange, length = 6, error = fal
                     type="text"
                     inputMode="numeric"
                     maxLength={1}
+                    disabled={disabled}
                     onChange={(e) => handleChange(e, index)}
                     onKeyDown={(e) => handleKeyDown(e, index)}
                     onPaste={handlePaste}

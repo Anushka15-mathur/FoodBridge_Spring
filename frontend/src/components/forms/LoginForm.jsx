@@ -16,171 +16,185 @@ import PasswordInput from "../auth/PasswordInput";
 import { loginSchema } from "../../validation/authSchema";
 
 export default function LoginForm() {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const { login } = useAuth();
 
-    const { login } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-    } = useForm({
-        resolver: zodResolver(loginSchema),
-        defaultValues: {
-            email: "",
-            password: "",
-            rememberMe: false,
-        },
+  const onSubmit = async (data) => {
+    try {
+      const response = await login({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (!response.token) {
+        toast.error(response.message);
+        return;
+      }
+
+      toast.success(response.message);
+
+     if (response.user?.role === "ADMIN") {
+
+  navigate("/admin/dashboard");
+
+} else if (response.user?.role === "RESTAURANT") {
+
+  if (response.user.profileCompleted) {
+    navigate("/restaurant/dashboard");
+  } else {
+    navigate("/additional-info", {
+      replace: true,
+      state: { role: "RESTAURANT" },
     });
+  }
 
-    const onSubmit = async (data) => {
-        try {
+} else if (response.user?.role === "NGO") {
 
-            const response = await login({
-                email: data.email,
-                password: data.password,
-            });
+  navigate("/ngo/dashboard");
 
-            if (!response.token) {
-                toast.error(response.message);
-                return;
-            }
+} else if (response.user?.role === "VOLUNTEER") {
 
-            toast.success(response.message);
+  if (response.user.profileCompleted) {
+    navigate("/volunteer/dashboard");
+  } else {
+    navigate("/additional-info", {
+      replace: true,
+      state: { role: "VOLUNTEER" },
+    });
+  }
 
-            if (response.user?.role === "ADMIN") {
-                navigate("/admin/dashboard");
-            } else if (response.user?.role === "RESTAURANT") {
-                if (response.user.profileCompleted) {
-                    navigate("/restaurant/dashboard");
-                } else {
-                    navigate("/additional-info", {
-                        replace: true,
-                        state: { role: "RESTAURANT" },
-                    });
-                }
-            } else {
-                // Dashboards for other roles aren't built yet,
-                // send them back to the home page for now.
-                navigate("/");
-            }
+} else {
 
-        } catch (error) {
+  navigate("/");
 
-            const message =
-                error.response?.data?.message ||
-                "Login failed. Please try again.";
+}
 
-            toast.error(message);
+    } catch (error) {
 
-            console.error(error);
-        }
-    };
+      const message =
+        error.response?.data?.message ||
+        "Login failed. Please try again.";
 
-    return (
-        <Card className="border-none shadow-none">
-            <CardContent className="space-y-6">
+      toast.error(message);
 
-                <AuthHeader
-                    title="Welcome Back 👋"
-                    subtitle="Sign in to continue to FoodBridge"
-                />
+      console.error(error);
+    }
+  };
 
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-5"
-                >
+  return (
+    <Card className="border-none shadow-none">
+      <CardContent className="space-y-6">
 
-                    {/* Email */}
+        <AuthHeader
+          title="Welcome Back 👋"
+          subtitle="Sign in to continue to FoodBridge"
+        />
 
-                    <div>
-                        <label className="mb-2 block font-medium">
-                            Email Address
-                        </label>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-5"
+        >
 
-                        <Input
-                            type="email"
-                            placeholder="Enter your email"
-                            {...register("email")}
-                        />
+          {/* Email */}
 
-                        {errors.email && (
-                            <p className="mt-1 text-sm text-red-500">
-                                {errors.email.message}
-                            </p>
-                        )}
-                    </div>
+          <div>
+            <label className="mb-2 block font-medium">
+              Email Address
+            </label>
 
-                    {/* Password */}
+            <Input
+              type="email"
+              placeholder="Enter your email"
+              {...register("email")}
+            />
 
-                    <div>
-                        <label className="mb-2 block font-medium">
-                            Password
-                        </label>
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
 
-                        <PasswordInput
-                            placeholder="Enter your password"
-                            {...register("password")}
-                        />
+          {/* Password */}
 
-                        {errors.password && (
-                            <p className="mt-1 text-sm text-red-500">
-                                {errors.password.message}
-                            </p>
-                        )}
-                    </div>
+          <div>
+            <label className="mb-2 block font-medium">
+              Password
+            </label>
 
-                    {/* Remember Me */}
+            <PasswordInput
+              placeholder="Enter your password"
+              {...register("password")}
+            />
 
-                    <div className="flex items-center justify-between">
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
 
-                        <label className="flex items-center gap-2 text-sm">
+          {/* Remember Me */}
 
-                            <input
-                                type="checkbox"
-                                {...register("rememberMe")}
-                            />
+          <div className="flex items-center justify-between">
 
-                            Remember Me
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                {...register("rememberMe")}
+              />
+              Remember Me
+            </label>
 
-                        </label>
+            <Link
+              to="/forgot-password"
+              className="text-sm text-primary hover:underline"
+            >
+              Forgot Password?
+            </Link>
 
-                        <Link
-                            to="/forgot-password"
-                            className="text-sm text-primary hover:underline"
-                        >
-                            Forgot Password?
-                        </Link>
+          </div>
 
-                    </div>
+          {/* Login Button */}
 
-                    {/* Login Button */}
+          <Button
+            type="submit"
+            className="w-full bg-primary text-white hover:bg-primary/90"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Logging in..." : "Login"}
+          </Button>
 
-                    <Button
-                        type="submit"
-                        className="w-full bg-primary text-white hover:bg-primary/90"
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? "Logging in..." : "Login"}
-                    </Button>
+        </form>
 
-                </form>
+        <p className="text-center text-sm">
 
-                <p className="text-center text-sm">
+          Don't have an account?{" "}
 
-                    Don't have an account?{" "}
+          <Link
+            to="/register"
+            className="font-semibold text-primary hover:underline"
+          >
+            Register
+          </Link>
 
-                    <Link
-                        to="/register"
-                        className="font-semibold text-primary hover:underline"
-                    >
-                        Register
-                    </Link>
+        </p>
 
-                </p>
-
-            </CardContent>
-        </Card>
-    );
+      </CardContent>
+    </Card>
+  );
 }

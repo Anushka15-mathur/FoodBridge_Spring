@@ -28,4 +28,6 @@ public class NgoProfileResponse {
     private String email;
 
     private String phone;
+
+    private String logoPath;
 }

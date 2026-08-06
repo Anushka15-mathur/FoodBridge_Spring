@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getAllocationHistory } from '../../../services/foodDistributionService';
+import StatusBadge from '../../../components/ui/StatusBadge';
 
 export default function AllocationHistory(){
   const [history, setHistory] = useState([]);
@@ -48,7 +49,7 @@ export default function AllocationHistory(){
                   <td className="px-4 py-3">{h.restaurantName}</td>
                   <td className="px-4 py-3">{h.ngoName}</td>
                   <td className="px-4 py-3">{h.allocatedQuantity}</td>
-                  <td className="px-4 py-3">{String(h.status)}</td>
+                  <td className="px-4 py-3"><StatusBadge status={h.status} /></td>
                   <td className="px-4 py-3">{new Date(h.allocatedAt).toLocaleString()}</td>
                 </tr>
               ))}

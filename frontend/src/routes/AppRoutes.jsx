@@ -1,14 +1,11 @@
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import PublicLayout from "../layouts/PublicLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import AdminLayout from "../layouts/AdminLayout";
 import RestaurantLayout from "../layouts/RestaurantLayout";
+import NgoLayout from "../layouts/NgoLayout";
+import VolunteerLayout from "../layouts/VolunteerLayout";
 
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
@@ -43,7 +40,21 @@ import RestaurantDashboard from "../pages/Restaurant/Dashboard";
 import Profile from "../pages/Restaurant/Profile";
 import AddDonation from "../pages/Restaurant/AddDonation";
 import DonationHistory from "../pages/Restaurant/DonationHistory";
-import DonationDetails from "../pages/Restaurant/DonationDetails";
+import RestaurantDonationDetails from "../pages/Restaurant/DonationDetails";
+
+// NGO Pages
+import NgoDashboard from "../pages/ngo/Dashboard";
+import Donations from "../pages/ngo/Donations";
+import NgoDonationDetails from "../pages/ngo/DonationDetails";
+import MyRequests from "../pages/ngo/MyRequests";
+import NgoProfile from "../pages/ngo/Profile";
+
+//Volunteer Pages
+import VolunteerDashboard from "../pages/volunteer/Dashboard";
+import VolunteerProfile from "../pages/volunteer/Profile";
+import VolunteerDeliveries from "../pages/volunteer/Deliveries";
+import VolunteerDeliveryDetails from "../pages/volunteer/DeliveryDetails";
+import VolunteerHistory from "../pages/volunteer/History";
 
 export default function AppRoutes() {
   return (
@@ -63,55 +74,30 @@ export default function AppRoutes() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            <Route
-              path="/forgot-password"
-              element={<ForgotPassword />}
-            />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
           </Route>
         </Route>
 
         {/* Registration Flow */}
         <Route element={<AuthLayout />}>
-          <Route
-            path="/additional-info"
-            element={<AdditionalInfo />}
-          />
+          <Route path="/additional-info" element={<AdditionalInfo />} />
 
-          <Route
-            path="/pending-approval"
-            element={<PendingApproval />}
-          />
+          <Route path="/pending-approval" element={<PendingApproval />} />
         </Route>
 
         {/* Protected Admin Routes */}
-        <Route
-          element={<ProtectedRoute allowedRoles={["ADMIN"]} />}
-        >
+        <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
           <Route element={<AdminLayout />}>
             <Route
               path="/admin"
-              element={
-                <Navigate
-                  to="/admin/dashboard"
-                  replace
-                />
-              }
+              element={<Navigate to="/admin/dashboard" replace />}
             />
 
-            <Route
-              path="/admin/dashboard"
-              element={<AdminDashboard />}
-            />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
-            <Route
-              path="/admin/pending-users"
-              element={<PendingUsers />}
-            />
+            <Route path="/admin/pending-users" element={<PendingUsers />} />
 
-            <Route
-              path="/admin/users"
-              element={<AllUsers />}
-            />
+            <Route path="/admin/users" element={<AllUsers />} />
 
             {/* Food Distribution main dashboard */}
             <Route
@@ -146,22 +132,11 @@ export default function AppRoutes() {
         </Route>
 
         {/* Protected Restaurant Routes */}
-        <Route
-          element={
-            <ProtectedRoute
-              allowedRoles={["RESTAURANT"]}
-            />
-          }
-        >
+        <Route element={<ProtectedRoute allowedRoles={["RESTAURANT"]} />}>
           <Route element={<RestaurantLayout />}>
             <Route
               path="/restaurant"
-              element={
-                <Navigate
-                  to="/restaurant/dashboard"
-                  replace
-                />
-              }
+              element={<Navigate to="/restaurant/dashboard" replace />}
             />
 
             <Route
@@ -169,33 +144,66 @@ export default function AppRoutes() {
               element={<RestaurantDashboard />}
             />
 
-            <Route
-              path="/restaurant/profile"
-              element={<Profile />}
-            />
+            <Route path="/restaurant/profile" element={<Profile />} />
 
-            <Route
-              path="/restaurant/add-donation"
-              element={<AddDonation />}
-            />
+            <Route path="/restaurant/add-donation" element={<AddDonation />} />
 
-            <Route
-              path="/restaurant/donations"
-              element={<DonationHistory />}
-            />
+            <Route path="/restaurant/donations" element={<DonationHistory />} />
 
             <Route
               path="/restaurant/donations/:id"
-              element={<DonationDetails />}
+              element={<RestaurantDonationDetails />}
             />
           </Route>
         </Route>
 
+        {/* Protected Volunteer Routes */}
+<Route element={<ProtectedRoute allowedRoles={["VOLUNTEER"]} />}>
+  <Route element={<VolunteerLayout />}>
+    <Route
+      path="/volunteer/dashboard"
+      element={<VolunteerDashboard />}
+    />
+
+    <Route
+      path="/volunteer/profile"
+      element={<VolunteerProfile />}
+    />
+
+    <Route
+      path="/volunteer/deliveries"
+      element={<VolunteerDeliveries />}
+    />
+
+    <Route
+      path="/volunteer/deliveries/:id"
+      element={<VolunteerDeliveryDetails />}
+    />
+
+    <Route
+      path="/volunteer/history"
+      element={<VolunteerHistory />}
+    />
+  </Route>
+</Route>
+
+        {/* Protected NGO Routes */}
+        <Route element={<ProtectedRoute allowedRoles={["NGO"]} />}>
+          <Route element={<NgoLayout />}>
+            <Route path="/ngo/dashboard" element={<NgoDashboard />} />
+
+            <Route path="/ngo/donations" element={<Donations />} />
+
+            <Route path="/ngo/donations/:id" element={<NgoDonationDetails />} />
+
+            <Route path="/ngo/requests" element={<MyRequests />} />
+
+            <Route path="/ngo/profile" element={<NgoProfile />} />
+          </Route>
+        </Route>
+
         {/* Unknown Route */}
-        <Route
-          path="*"
-          element={<Navigate to="/" replace />}
-        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

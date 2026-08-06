@@ -28,19 +28,19 @@ export default function ProtectedRoute({ allowedRoles }) {
         return <Navigate to="/" replace />;
     }
 
-    if (
-        user.role === "RESTAURANT" &&
-        allowedRoles?.includes("RESTAURANT") &&
-        !user.profileCompleted
-    ) {
-        return (
-            <Navigate
-                to="/additional-info"
-                replace
-                state={{ role: "RESTAURANT" }}
-            />
-        );
-    }
+   if (
+    ["RESTAURANT", "VOLUNTEER"].includes(user.role) &&
+    allowedRoles?.includes(user.role) &&
+    !user.profileCompleted
+) {
+    return (
+        <Navigate
+            to="/additional-info"
+            replace
+            state={{ role: user.role }}
+        />
+    );
+  }
 
     return <Outlet />;
 }
