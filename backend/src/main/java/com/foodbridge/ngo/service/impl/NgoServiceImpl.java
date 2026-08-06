@@ -66,7 +66,7 @@ public class NgoServiceImpl implements NgoService {
     private DonationRequestRepository donationRequestRepository;
 
     @Autowired
-<<<<<<< HEAD
+
     private VolunteerRepository volunteerRepository;
 
     @Autowired
@@ -74,9 +74,8 @@ public class NgoServiceImpl implements NgoService {
 
    @Autowired
    private DeliveryRepository deliveryRepository;
-=======
+
     private DonationExpiryService donationExpiryService;
->>>>>>> develop
 
     @Override
     public NgoDashboardResponse getDashboard() {
