@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import ngoService from "../../services/ngoService";
 
+import AssignVolunteerDialog from "../../components/ngo/AssignVolunteerDialog";
+import { Button } from "../../components/ui/button";
+
 export default function MyRequests() {
   const [requests, setRequests] = useState([]);
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState(null);
 
   useEffect(() => {
     loadRequests();
@@ -19,10 +24,7 @@ export default function MyRequests() {
 
   return (
     <div className="space-y-6">
-
-      <h1 className="text-3xl font-bold">
-        My Donation Requests
-      </h1>
+      <h1 className="text-3xl font-bold">My Donation Requests</h1>
 
       {requests.length === 0 ? (
         <div className="rounded-xl border bg-white p-10 text-center text-gray-500 shadow-sm">
@@ -30,32 +32,44 @@ export default function MyRequests() {
         </div>
       ) : (
         <div className="space-y-4">
-
           {requests.map((request) => (
             <div
               key={request.id}
               className="rounded-xl border bg-white p-5 shadow-sm"
             >
-              <h2 className="font-semibold">
-                {request.foodName}
-              </h2>
+              <h2 className="font-semibold text-lg">{request.foodName}</h2>
 
-              <p className="text-gray-500">
-                {request.restaurantName}
-              </p>
+              <p className="text-gray-500">{request.restaurantName}</p>
 
-              <p className="mt-2">
-                Status:
-                <span className="ml-2 font-semibold">
-                  {request.status}
-                </span>
-              </p>
+              <div className="mt-4 flex items-center justify-between">
+                <p>
+                  Status:
+                  <span className="ml-2 font-semibold">{request.status}</span>
+                </p>
+
+                {request.status === "APPROVED" && (
+                  <Button
+                    className="bg-green-600 hover:bg-green-700 text-white font-semibold shadow-md"
+                    onClick={() => {
+                      setSelectedRequestId(request.requestId);
+                      setAssignDialogOpen(true);
+                    }}
+                  >
+                    Assign Volunteer
+                  </Button>
+                )}
+              </div>
             </div>
           ))}
-
         </div>
       )}
 
+      <AssignVolunteerDialog
+        open={assignDialogOpen}
+        onOpenChange={setAssignDialogOpen}
+        requestId={selectedRequestId}
+        onAssigned={loadRequests}
+      />
     </div>
   );
 }

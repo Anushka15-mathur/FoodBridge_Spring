@@ -23,6 +23,8 @@ import jakarta.validation.Valid;
 
 import com.foodbridge.ngo.dto.NgoProfileResponse;
 import com.foodbridge.ngo.dto.UpdateNgoProfileDto;
+import com.foodbridge.ngo.dto.VolunteerListResponse;
+import com.foodbridge.ngo.dto.AssignVolunteerRequest;
 
 @RestController
 @RequestMapping("/api/ngo")
@@ -85,5 +87,20 @@ public ResponseEntity<String> updateProfile(
 
     return ResponseEntity.ok(
             ngoService.updateProfile(request));
+}
+
+@GetMapping("/volunteers")
+public ResponseEntity<List<VolunteerListResponse>> getAvailableVolunteers() {
+
+    return ResponseEntity.ok(
+            ngoService.getAvailableVolunteers());
+}
+
+@PostMapping("/assign-volunteer")
+public ResponseEntity<String> assignVolunteer(
+        @Valid @RequestBody AssignVolunteerRequest request) {
+
+    return ResponseEntity.ok(
+            ngoService.assignVolunteer(request));
 }
 }
