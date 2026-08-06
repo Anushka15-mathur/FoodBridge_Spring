@@ -7,6 +7,7 @@
 # Backend
 backend/target/
 backend/uploads/ngos/
+backend/src/main/resources/application.properties
 
 # Frontend
 frontend/node_modules/
