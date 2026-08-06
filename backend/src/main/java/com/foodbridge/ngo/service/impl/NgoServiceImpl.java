@@ -51,13 +51,39 @@ public class NgoServiceImpl implements NgoService {
     @Override
     public NgoDashboardResponse getDashboard() {
 
+        // UserResponse currentUser = authService.getCurrentUser();
+
+        // User user = userRepository.findById(currentUser.getId())
+        //         .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+        // Ngo ngo = ngoRepository.findByUser(user)
+        //         .orElseThrow(() -> new ResourceNotFoundException("NGO profile not found."));
         UserResponse currentUser = authService.getCurrentUser();
 
-        User user = userRepository.findById(currentUser.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+User user = userRepository.findById(currentUser.getId())
+        .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-        Ngo ngo = ngoRepository.findByUser(user)
-                .orElseThrow(() -> new ResourceNotFoundException("NGO profile not found."));
+System.out.println("========== NGO DEBUG ==========");
+System.out.println("Current User ID      : " + currentUser.getId());
+System.out.println("Current Email        : " + currentUser.getEmail());
+System.out.println("Current Role         : " + currentUser.getRole());
+System.out.println("Database User ID     : " + user.getId());
+System.out.println("Database Email       : " + user.getEmail());
+
+System.out.println(
+    "findByUser(user) = " + ngoRepository.findByUser(user).isPresent()
+);
+
+System.out.println("================================");
+
+// Ngo ngo = ngoRepository.findByUser(user)
+//         .orElseThrow(() -> new ResourceNotFoundException("NGO profile not found."));
+System.out.println("Current User ID = " + user.getId());
+
+Ngo ngo = ngoRepository.findByUser(user)
+        .orElseThrow(() ->
+                new ResourceNotFoundException(
+                        "NGO profile not found for user id = " + user.getId()));
 
         return NgoDashboardResponse.builder()
         .ngoName(ngo.getNgoName())
@@ -109,13 +135,37 @@ public List<DonationCardResponse> getAvailableDonations() {
 @Override
 public String requestDonation(Long donationId, DonationRequestDto request) {
 
-    UserResponse currentUser = authService.getCurrentUser();
+//     UserResponse currentUser = authService.getCurrentUser();
 
-    User user = userRepository.findById(currentUser.getId())
-            .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+//     User user = userRepository.findById(currentUser.getId())
+//             .orElseThrow(() -> new ResourceNotFoundException("User not found."));
 
-    Ngo ngo = ngoRepository.findByUser(user)
-            .orElseThrow(() -> new ResourceNotFoundException("NGO profile not found."));
+//     Ngo ngo = ngoRepository.findByUser(user)
+//             .orElseThrow(() -> new ResourceNotFoundException("NGO profile not found."));
+UserResponse currentUser = authService.getCurrentUser();
+
+User user = userRepository.findById(currentUser.getId())
+        .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+
+System.out.println("\n========== NGO REQUEST DEBUG ==========");
+System.out.println("Current User ID      : " + currentUser.getId());
+System.out.println("Current User Email   : " + currentUser.getEmail());
+System.out.println("Current User Role    : " + currentUser.getRole());
+
+System.out.println("Database User ID     : " + user.getId());
+System.out.println("Database User Email  : " + user.getEmail());
+
+boolean ngoExists = ngoRepository.findByUser(user).isPresent();
+
+System.out.println("NGO Exists           : " + ngoExists);
+
+Ngo ngo = ngoRepository.findByUser(user)
+        .orElseThrow(() ->
+                new ResourceNotFoundException(
+                        "NGO profile not found for user id = " + user.getId()));
+
+System.out.println("NGO ID               : " + ngo.getId());
+System.out.println("=======================================\n");
 
     FoodDonation donation = foodDonationRepository.findById(donationId)
             .orElseThrow(() -> new ResourceNotFoundException("Donation not found."));
