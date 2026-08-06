@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getAllDonations, getDonationRequests, allocateDonation } from '../../../services/foodDistributionService';
+import { isDonationRequestable } from '../../../utils/donationEligibility';
 
 export default function AllocationCenter(){
   const [donations, setDonations] = useState([]);
@@ -21,7 +22,12 @@ export default function AllocationCenter(){
       .finally(() => setLoading(false));
   }, []);
 
-  const filtered = requests.filter((r) => (selectedDonation ? r.donationId === selectedDonation : true));
+  const activeDonations = donations.filter(isDonationRequestable);
+  const activeDonationIds = new Set(activeDonations.map((donation) => donation.id));
+  const filtered = requests.filter((r) =>
+    activeDonationIds.has(r.donationId) &&
+    (selectedDonation ? r.donationId === selectedDonation : true)
+  );
 
   const handleAllocate = async (requestId) => {
     const v = qtys[requestId];
@@ -56,7 +62,7 @@ export default function AllocationCenter(){
           className="border px-2 py-1"
         >
           <option value="">All Donations</option>
-          {donations.map((d) => (
+          {activeDonations.map((d) => (
             <option key={d.id} value={d.id}>
               {d.restaurant} - {d.title} ({d.remainingQuantity})
             </option>

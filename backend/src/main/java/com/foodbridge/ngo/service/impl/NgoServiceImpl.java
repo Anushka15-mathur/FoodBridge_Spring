@@ -1,5 +1,7 @@
 package com.foodbridge.ngo.service.impl;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,8 +14,8 @@ import com.foodbridge.allocation.enums.DonationRequestStatus;
 import com.foodbridge.allocation.repository.DonationRequestRepository;
 import com.foodbridge.auth.service.AuthService;
 import com.foodbridge.donation.entity.FoodDonation;
-import com.foodbridge.donation.enums.DonationStatus;
 import com.foodbridge.donation.repository.FoodDonationRepository;
+import com.foodbridge.donation.service.DonationExpiryService;
 import com.foodbridge.exception.ResourceNotFoundException;
 import com.foodbridge.ngo.dto.DonationCardResponse;
 import com.foodbridge.ngo.dto.DonationDetailsResponse;
@@ -64,6 +66,7 @@ public class NgoServiceImpl implements NgoService {
     private DonationRequestRepository donationRequestRepository;
 
     @Autowired
+<<<<<<< HEAD
     private VolunteerRepository volunteerRepository;
 
     @Autowired
@@ -71,9 +74,14 @@ public class NgoServiceImpl implements NgoService {
 
    @Autowired
    private DeliveryRepository deliveryRepository;
+=======
+    private DonationExpiryService donationExpiryService;
+>>>>>>> develop
 
     @Override
     public NgoDashboardResponse getDashboard() {
+
+        donationExpiryService.expireDonations();
 
         // UserResponse currentUser = authService.getCurrentUser();
 
@@ -112,7 +120,11 @@ Ngo ngo = ngoRepository.findByUser(user)
         return NgoDashboardResponse.builder()
         .ngoName(ngo.getNgoName())
         .availableDonations(
-                foodDonationRepository.countByStatus(DonationStatus.AVAILABLE))
+                foodDonationRepository
+                        .countByStatusInAndIsDeletedFalseAndRemainingQuantityGreaterThanAndExpiryTimeAfter(
+                                donationExpiryService.getRequestableStatuses(),
+                                BigDecimal.ZERO,
+                                LocalDateTime.now()))
         .pendingRequests(
                 donationRequestRepository.countByNgoAndStatus(
                         ngo,
@@ -137,8 +149,13 @@ Ngo ngo = ngoRepository.findByUser(user)
     @Override
 public List<DonationCardResponse> getAvailableDonations() {
 
-    List<FoodDonation> donations =
-            foodDonationRepository.findByStatus(DonationStatus.AVAILABLE);
+    donationExpiryService.expireDonations();
+
+    List<FoodDonation> donations = foodDonationRepository
+            .findByStatusInAndIsDeletedFalseAndRemainingQuantityGreaterThanAndExpiryTimeAfterOrderByExpiryTimeAsc(
+                    donationExpiryService.getRequestableStatuses(),
+                    BigDecimal.ZERO,
+                    LocalDateTime.now());
 
     return donations.stream()
             .map(donation -> DonationCardResponse.builder()
@@ -148,16 +165,20 @@ public List<DonationCardResponse> getAvailableDonations() {
                             donation.getRestaurant().getRestaurantName())
                     .estimatedMeals(donation.getEstimatedMeals())
                     .quantity(donation.getQuantity())
+                    .remainingQuantity(donation.getRemainingQuantity())
                     .quantityUnit(donation.getQuantityUnit())
                     .foodType(donation.getFoodType())
                     .pickupAddress(donation.getPickupAddress())
                     .expiryTime(donation.getExpiryTime())
+                    .status(donation.getStatus())
                     .build())
             .collect(Collectors.toList());
 }
 
 @Override
 public String requestDonation(Long donationId, DonationRequestDto request) {
+
+    donationExpiryService.expireDonations();
 
 //     UserResponse currentUser = authService.getCurrentUser();
 
@@ -191,21 +212,13 @@ Ngo ngo = ngoRepository.findByUser(user)
 System.out.println("NGO ID               : " + ngo.getId());
 System.out.println("=======================================\n");
 
-    FoodDonation donation = foodDonationRepository.findById(donationId)
+    FoodDonation donation = foodDonationRepository.findByIdAndIsDeletedFalse(donationId)
             .orElseThrow(() -> new ResourceNotFoundException("Donation not found."));
 
-    if (donation.getStatus() != DonationStatus.AVAILABLE) {
-        throw new IllegalArgumentException("Donation is not available.");
+    if (!donationExpiryService.isRequestable(donation)) {
+        throw new IllegalArgumentException(
+                "Donation is no longer available for request.");
     }
-
-    if (donation.getExpiryTime().isBefore(java.time.LocalDateTime.now())) {
-    throw new IllegalArgumentException("Donation has expired.");
-        }
-
-   if (donation.getRemainingQuantity().compareTo(java.math.BigDecimal.ZERO) <= 0) {
-    throw new IllegalArgumentException(
-            "No quantity remaining for this donation.");
-   }        
 
     if (request.getRequestedQuantity()
             .compareTo(donation.getRemainingQuantity()) > 0) {
@@ -263,9 +276,15 @@ public List<MyDonationRequestResponse> getMyDonationRequests() {
         @Override
 public DonationDetailsResponse getDonationDetails(Long donationId) {
 
-    FoodDonation donation = foodDonationRepository.findById(donationId)
+    donationExpiryService.expireDonations();
+
+    FoodDonation donation = foodDonationRepository.findByIdAndIsDeletedFalse(donationId)
             .orElseThrow(() ->
                     new ResourceNotFoundException("Donation not found."));
+
+    if (!donationExpiryService.isRequestable(donation)) {
+        throw new ResourceNotFoundException("Donation is no longer available.");
+    }
 
     return DonationDetailsResponse.builder()
             .id(donation.getId())
@@ -282,6 +301,7 @@ public DonationDetailsResponse getDonationDetails(Long donationId) {
             .pickupAddress(donation.getPickupAddress())
             .expiryTime(donation.getExpiryTime())
             .specialInstructions(donation.getSpecialInstructions())
+            .status(donation.getStatus())
             .build();
 }
 

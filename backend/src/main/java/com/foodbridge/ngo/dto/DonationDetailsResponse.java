@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.foodbridge.delivery.enums.FoodCondition;
+import com.foodbridge.donation.enums.DonationStatus;
 import com.foodbridge.donation.enums.FoodType;
 import com.foodbridge.donation.enums.QuantityUnit;
 
@@ -43,4 +44,6 @@ public class DonationDetailsResponse {
     private LocalDateTime expiryTime;
 
     private String specialInstructions;
+
+    private DonationStatus status;
 }

@@ -56,6 +56,13 @@ public class VolunteerServiceImpl implements VolunteerService {
                 .maxDeliveryDistance(volunteer.getMaxDeliveryDistance())
                 .drivingLicensePath(volunteer.getDrivingLicensePath())
                 .identityProofPath(volunteer.getIdentityProofPath())
+                .drivingLicenseNumber(volunteer.getDrivingLicenseNumber())
+                .aadhaarNumber(volunteer.getAadhaarNumber())
+                .emergencyContact(volunteer.getEmergencyContact())
+                .address(volunteer.getAddress())
+                .city(volunteer.getCity())
+                .state(volunteer.getState())
+                .pincode(volunteer.getPincode())
                 .build();
     }
 

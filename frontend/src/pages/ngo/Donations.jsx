@@ -5,6 +5,7 @@ import { Search } from "lucide-react";
 import ngoService from "../../services/ngoService";
 import DonationCard from "../../components/ngo/DonationCard";
 import { Input } from "../../components/ui/input";
+import { isDonationRequestable } from "../../utils/donationEligibility";
 
 export default function Donations() {
   const navigate = useNavigate();
@@ -33,11 +34,10 @@ export default function Donations() {
 
     try {
       const data = await ngoService.getAvailableDonations();
+      const requestableDonations = (data ?? []).filter(isDonationRequestable);
 
-      console.log("Available Donations:", data);
-
-      setDonations(data);
-      setFilteredDonations(data);
+      setDonations(requestableDonations);
+      setFilteredDonations(requestableDonations);
     } catch (err) {
       console.error("Error loading donations:", err);
     } finally {

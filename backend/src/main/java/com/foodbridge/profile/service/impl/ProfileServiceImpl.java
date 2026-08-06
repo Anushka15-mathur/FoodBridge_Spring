@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.foodbridge.security.CustomUserDetails;
+import com.foodbridge.exception.BadRequestException;
 import com.foodbridge.exception.ResourceNotFoundException;
 import com.foodbridge.donor.entity.Donor;
 import com.foodbridge.donor.repository.DonorRepository;
@@ -141,6 +142,16 @@ public class ProfileServiceImpl implements ProfileService {
 
         User user = getCurrentUser();
 
+        if (user.getRole() != Role.VOLUNTEER) {
+            throw new BadRequestException("User is not a volunteer.");
+        }
+
+        if (volunteerRepository.findByUser(user).isPresent()) {
+            throw new BadRequestException("Volunteer profile already exists.");
+        }
+
+        validateVolunteerProfile(request, drivingLicense, identityProof);
+
         String drivingLicensePath = fileStorageService.storeFile(
                 drivingLicense,
                 "volunteers");
@@ -149,14 +160,6 @@ public class ProfileServiceImpl implements ProfileService {
                 identityProof,
                 "volunteers");
 
-        if (user.getRole() != Role.VOLUNTEER) {
-            throw new IllegalStateException("User is not a volunteer.");
-        }
-
-        if (volunteerRepository.findByUser(user).isPresent()) {
-            throw new IllegalStateException("Volunteer profile already exists.");
-        }
-
         Volunteer volunteer = Volunteer.builder()
         .user(user)
         .currentLatitude(request.getCurrentLatitude())
@@ -164,12 +167,70 @@ public class ProfileServiceImpl implements ProfileService {
         .maxDeliveryDistance(request.getMaxDeliveryDistance())
         .drivingLicensePath(drivingLicensePath)
         .identityProofPath(identityProofPath)
+        .drivingLicenseNumber(request.getDrivingLicenseNumber().trim())
+        .aadhaarNumber(request.getAadhaarNumber().trim())
+        .emergencyContact(request.getEmergencyContact().trim())
+        .address(request.getAddress().trim())
+        .city(request.getCity().trim())
+        .state(request.getState().trim())
+        .pincode(request.getPincode().trim())
         .build();
 
         volunteerRepository.save(volunteer);
 
         user.setProfileCompleted(true);
         userRepository.save(user);
+    }
+
+    private void validateVolunteerProfile(
+            VolunteerProfileRequest request,
+            MultipartFile drivingLicense,
+            MultipartFile identityProof) {
+
+        if (isBlank(request.getDrivingLicenseNumber())) {
+            throw new BadRequestException("Driving license number is required.");
+        }
+
+        if (isBlank(request.getAadhaarNumber())) {
+            throw new BadRequestException("Aadhaar number is required.");
+        }
+
+        if (isBlank(request.getEmergencyContact())) {
+            throw new BadRequestException("Emergency contact is required.");
+        }
+
+        if (isBlank(request.getAddress()) || isBlank(request.getCity())
+                || isBlank(request.getState()) || isBlank(request.getPincode())) {
+            throw new BadRequestException("Complete address details are required.");
+        }
+
+        if (!request.getPincode().trim().matches("\\d{6}")) {
+            throw new BadRequestException("Pincode must contain exactly 6 digits.");
+        }
+
+        if (request.getMaxDeliveryDistance() == null
+                || request.getMaxDeliveryDistance() < 1) {
+            throw new BadRequestException(
+                    "Maximum delivery distance must be at least 1 km.");
+        }
+
+        if (request.getCurrentLatitude() == null
+                || request.getCurrentLongitude() == null) {
+            throw new BadRequestException(
+                    "Current latitude and longitude are required.");
+        }
+
+        if (drivingLicense == null || drivingLicense.isEmpty()) {
+            throw new BadRequestException("Driving license document is required.");
+        }
+
+        if (identityProof == null || identityProof.isEmpty()) {
+            throw new BadRequestException("Identity proof document is required.");
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 
     @Override

@@ -12,6 +12,7 @@ import com.foodbridge.allocation.dto.DonationRequestAdminResponse;
 import com.foodbridge.allocation.dto.AllocationAdminResponse;
 import com.foodbridge.allocation.repository.DonationRequestRepository;
 import com.foodbridge.allocation.repository.DonationAllocationRepository;
+import com.foodbridge.donation.service.DonationExpiryService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +37,8 @@ public class AdminAllocationController {
 
 	private final DonationAllocationRepository donationAllocationRepository;
 
+    private final DonationExpiryService donationExpiryService;
+
     @Operation(
     	    summary = "Allocate food donation",
     	    description = "Allows an administrator to allocate a food donation request."
@@ -59,7 +62,13 @@ public class AdminAllocationController {
 		    @GetMapping("/requests")
 		    public ResponseEntity<List<DonationRequestAdminResponse>> getAllRequests() {
 
-			List<DonationRequest> requests = donationRequestRepository.findAll();
+			donationExpiryService.expireDonations();
+
+			List<DonationRequest> requests = donationRequestRepository
+					.findByStatus(com.foodbridge.allocation.enums.DonationRequestStatus.PENDING)
+					.stream()
+					.filter(request -> donationExpiryService.isRequestable(request.getDonation()))
+					.toList();
 
 			List<DonationRequestAdminResponse> response = requests.stream()
 				.map(r -> DonationRequestAdminResponse.builder()
