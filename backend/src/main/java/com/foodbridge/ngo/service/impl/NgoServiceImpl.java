@@ -246,18 +246,45 @@ public List<MyDonationRequestResponse> getMyDonationRequests() {
     List<DonationRequest> requests = donationRequestRepository.findByNgo(ngo);
 
     return requests.stream()
-            .map(request -> MyDonationRequestResponse.builder()
+        .map(request -> {
+
+            DonationAllocation allocation =
+                    allocationRepository.findByDonationRequest(request)
+                            .orElse(null);
+
+            Delivery delivery = null;
+
+            if (allocation != null) {
+                delivery = deliveryRepository
+                        .findByAllocation(allocation)
+                        .orElse(null);
+            }
+
+            return MyDonationRequestResponse.builder()
                     .requestId(request.getId())
                     .donationId(request.getDonation().getId())
                     .donationTitle(request.getDonation().getTitle())
-                    .restaurantName(request.getDonation()
-                            .getRestaurant()
-                            .getRestaurantName())
+                    .restaurantName(
+                            request.getDonation()
+                                    .getRestaurant()
+                                    .getRestaurantName())
                     .requestedQuantity(request.getRequestedQuantity())
                     .status(request.getStatus())
                     .requestedAt(request.getRequestedAt())
-                    .build())
-            .toList();
+                    .volunteerAssigned(delivery != null)
+                    .volunteerName(
+                            delivery != null
+                                    ? delivery.getVolunteer()
+                                            .getUser()
+                                            .getFirstName()
+                                            + " "
+                                            + delivery.getVolunteer()
+                                                    .getUser()
+                                                    .getLastName()
+                                    : null)
+                    .build();
+        })
+        .toList();
         }        
 
         @Override

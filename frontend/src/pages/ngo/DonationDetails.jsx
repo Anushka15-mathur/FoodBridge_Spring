@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  MapPin,
-  Clock3,
-  Package,
-  Store,
-  UtensilsCrossed,
-} from "lucide-react";
+import { MapPin, Clock3, Package, Store, UtensilsCrossed } from "lucide-react";
 
 import { toast } from "sonner";
 
@@ -25,7 +19,6 @@ import {
 import ngoService from "../../services/ngoService";
 
 export default function DonationDetails() {
-
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -43,33 +36,25 @@ export default function DonationDetails() {
 
   async function loadDonation() {
     try {
-
       const response = await ngoService.getDonationDetails(id);
 
       setDonation(response);
-
     } catch (error) {
-
       console.error(error);
 
       toast.error("Failed to load donation.");
-
     } finally {
-
       setLoading(false);
-
     }
   }
 
   async function handleClaimDonation() {
-
     if (!requestedQuantity) {
       toast.error("Please enter requested quantity.");
       return;
     }
 
     try {
-
       setSubmitting(true);
 
       await ngoService.requestDonation(id, {
@@ -82,217 +67,116 @@ export default function DonationDetails() {
       setOpenDialog(false);
 
       navigate("/ngo/requests");
-
     } catch (error) {
-
       toast.error(
-        error.response?.data?.message ||
-        "Failed to submit donation request."
+        error.response?.data?.message || "Failed to submit donation request.",
       );
-
     } finally {
-
       setSubmitting(false);
-
     }
-
   }
 
   if (loading) {
-
     return (
       <div className="flex h-72 items-center justify-center">
-
         <div className="text-center">
-
           <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-green-600 border-t-transparent"></div>
 
-          <p className="text-gray-500">
-            Loading donation...
-          </p>
-
+          <p className="text-gray-500">Loading donation...</p>
         </div>
-
       </div>
     );
-
   }
 
   if (!donation) {
-
     return (
       <div className="rounded-2xl bg-white p-12 text-center shadow">
-
-        <h2 className="text-2xl font-bold">
-          Donation Not Found
-        </h2>
-
+        <h2 className="text-2xl font-bold">Donation Not Found</h2>
       </div>
     );
-
   }
 
   return (
-
     <>
       <div className="mx-auto max-w-5xl space-y-8">
-
         {/* Header */}
 
         <div className="overflow-hidden rounded-3xl bg-gradient-to-r from-green-600 to-emerald-500 text-white shadow-xl">
-
           <div className="flex flex-col items-center gap-6 p-10 md:flex-row">
-
             <div className="flex h-36 w-36 items-center justify-center rounded-2xl bg-white/20 backdrop-blur">
-
               <UtensilsCrossed className="h-16 w-16" />
-
             </div>
 
             <div className="flex-1">
-
-              <h1 className="text-4xl font-bold">
-
-                {donation.foodName}
-
-              </h1>
+              <h1 className="text-4xl font-bold">{donation.foodName}</h1>
 
               <p className="mt-2 text-lg text-green-100">
-
                 Fresh food ready for pickup
-
               </p>
 
               <div className="mt-6 inline-flex rounded-full bg-white/20 px-5 py-2 font-semibold backdrop-blur">
-
                 Available Quantity : {donation.quantity}
-
               </div>
-
             </div>
-
           </div>
-
         </div>
 
         {/* Details */}
 
         <div className="grid gap-6 md:grid-cols-2">
-
           <div className="rounded-2xl bg-white p-6 shadow">
-
-            <h2 className="mb-6 text-xl font-bold">
-
-              Donation Information
-
-            </h2>
+            <h2 className="mb-6 text-xl font-bold">Donation Information</h2>
 
             <div className="space-y-5">
-
               <div className="flex items-center gap-3">
-
                 <Store className="text-green-600" />
 
                 <div>
+                  <p className="text-sm text-gray-500">Restaurant</p>
 
-                  <p className="text-sm text-gray-500">
-
-                    Restaurant
-
-                  </p>
-
-                  <p className="font-semibold">
-
-                    {donation.restaurantName}
-
-                  </p>
-
+                  <p className="font-semibold">{donation.restaurantName}</p>
                 </div>
-
               </div>
 
               <div className="flex items-center gap-3">
-
                 <Package className="text-blue-600" />
 
                 <div>
+                  <p className="text-sm text-gray-500">Quantity</p>
 
-                  <p className="text-sm text-gray-500">
-
-                    Quantity
-
-                  </p>
-
-                  <p className="font-semibold">
-
-                    {donation.quantity}
-
-                  </p>
-
+                  <p className="font-semibold">{donation.quantity}</p>
                 </div>
-
               </div>
 
               <div className="flex items-center gap-3">
-
                 <Clock3 className="text-orange-500" />
 
                 <div>
+                  <p className="text-sm text-gray-500">Pickup Time</p>
 
-                  <p className="text-sm text-gray-500">
-
-                    Pickup Time
-
-                  </p>
-
-                  <p className="font-semibold">
-
-                    {donation.pickupTime}
-
-                  </p>
-
+                  <p className="font-semibold">{donation.pickupTime}</p>
                 </div>
-
               </div>
 
               <div className="flex items-center gap-3">
-
                 <MapPin className="text-red-500" />
 
                 <div>
-
-                  <p className="text-sm text-gray-500">
-
-                    Pickup Address
-
-                  </p>
+                  <p className="text-sm text-gray-500">Pickup Address</p>
 
                   <p className="font-semibold">
-
                     {donation.pickupAddress || "Not Available"}
-
                   </p>
-
                 </div>
-
               </div>
-
             </div>
-
           </div>
 
           <div className="rounded-2xl bg-white p-6 shadow">
-
-            <h2 className="mb-6 text-xl font-bold">
-
-              Description
-
-            </h2>
+            <h2 className="mb-6 text-xl font-bold">Description</h2>
 
             <p className="leading-8 text-gray-600">
-
               {donation.description || "No description available."}
-
             </p>
 
             <Button
@@ -301,77 +185,53 @@ export default function DonationDetails() {
             >
               Claim Donation
             </Button>
-
           </div>
-
         </div>
-
       </div>
 
       {/* Claim Donation Dialog */}
 
-      <Dialog
-        open={openDialog}
-        onOpenChange={setOpenDialog}
-      >
-
-        <DialogContent>
-
-          <DialogHeader>
-
-            <DialogTitle>
-
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent className="sm:max-w-lg rounded-3xl border-0 bg-white shadow-2xl p-0 overflow-hidden">
+          <DialogHeader className="border-b bg-white px-8 py-6">
+            <DialogTitle className="text-2xl font-bold text-gray-900">
               Request Donation
-
             </DialogTitle>
 
+            <p className="mt-1 text-sm text-gray-500">
+              Fill the details below to request this donation.
+            </p>
           </DialogHeader>
 
-          <div className="space-y-5">
-
+          <div className="space-y-6 px-8 py-6 bg-white">
             <div>
-
               <label className="mb-2 block font-medium">
-
                 Requested Quantity
-
               </label>
 
               <Input
                 type="number"
                 value={requestedQuantity}
-                onChange={(e) =>
-                  setRequestedQuantity(e.target.value)
-                }
+                onChange={(e) => setRequestedQuantity(e.target.value)}
               />
-
             </div>
 
             <div>
-
-              <label className="mb-2 block font-medium">
-
-                Request Message
-
-              </label>
+              <label className="mb-2 block font-medium">Request Message</label>
 
               <Textarea
                 rows={4}
                 value={requestMessage}
-                onChange={(e) =>
-                  setRequestMessage(e.target.value)
-                }
+                onChange={(e) => setRequestMessage(e.target.value)}
               />
-
             </div>
-
           </div>
 
           <DialogFooter>
-
             <Button
               variant="outline"
               onClick={() => setOpenDialog(false)}
+              className="border-gray-300 text-gray-700 hover:bg-gray-100 font-semibold"
             >
               Cancel
             </Button>
@@ -379,19 +239,13 @@ export default function DonationDetails() {
             <Button
               onClick={handleClaimDonation}
               disabled={submitting}
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold shadow-md border border-green-700 disabled:opacity-60"
             >
-              {submitting
-                ? "Submitting..."
-                : "Submit Request"}
+              {submitting ? "Submitting..." : "Submit Request"}
             </Button>
-
           </DialogFooter>
-
         </DialogContent>
-
       </Dialog>
-
     </>
-
   );
 }
