@@ -75,7 +75,8 @@ public class NgoServiceImpl implements NgoService {
    @Autowired
    private DeliveryRepository deliveryRepository;
 
-    private DonationExpiryService donationExpiryService;
+   @Autowired
+   private DonationExpiryService donationExpiryService;
 
     @Override
     public NgoDashboardResponse getDashboard() {
