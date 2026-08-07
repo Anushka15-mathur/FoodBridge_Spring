@@ -127,6 +127,7 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	@Override
+	@Transactional
 	public void approveUser(Long id) {
 		updateUserStatus(id, AccountStatus.APPROVED);
 	}
@@ -224,6 +225,15 @@ public class AdminServiceImpl implements AdminService {
 						"User not found with id: " + id));
 
 		user.setStatus(status);
+
+		if (status == AccountStatus.APPROVED && user.getRole() == Role.VOLUNTEER) {
+			var volunteer = volunteerRepository.findByUser(user)
+					.orElseThrow(() -> new ResourceNotFoundException(
+							"Volunteer profile not found for user id: " + id));
+
+			volunteer.setVerified(true);
+			volunteerRepository.save(volunteer);
+		}
 
 		userRepository.save(user);
 
