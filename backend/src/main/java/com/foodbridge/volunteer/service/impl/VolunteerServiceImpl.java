@@ -317,8 +317,9 @@ public class VolunteerServiceImpl implements VolunteerService {
                 .deliveryId(delivery.getId())
                 .donationId(donation.getId())
                 .restaurantName(
-                        donation.getRestaurant()
-                                .getRestaurantName())
+        donation.getRestaurant() != null
+                ? donation.getRestaurant().getRestaurantName()
+                : "Donor")
                 .ngoName(
                         donationRequest.getNgo()
                                 .getNgoName())
