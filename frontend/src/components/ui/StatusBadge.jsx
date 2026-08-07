@@ -45,6 +45,16 @@ const STATUS_CONFIG = {
     bgColor: "#F3F4F6",
     textColor: "#6B7280",
   },
+  PENDING_REVIEW: {
+    label: "Pending Review",
+    bgColor: "#FEF3C7",
+    textColor: "#92400E",
+  },
+  APPROVED: {
+    label: "Approved",
+    bgColor: "#DCFCE7",
+    textColor: "#166534",
+  },
   // Additional statuses for restaurant/donation context
   REQUESTED: {
     label: "Requested",

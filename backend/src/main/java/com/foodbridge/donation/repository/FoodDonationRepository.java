@@ -14,6 +14,8 @@ import org.springframework.data.repository.query.Param;
 import com.foodbridge.donation.entity.FoodDonation;
 import com.foodbridge.donation.enums.DonationStatus;
 import com.foodbridge.restaurant.entity.Restaurant;
+import com.foodbridge.donor.entity.Donor;
+import com.foodbridge.donation.enums.DonationType;
 
 public interface FoodDonationRepository extends JpaRepository<FoodDonation, Long> {
 
@@ -26,6 +28,9 @@ public interface FoodDonationRepository extends JpaRepository<FoodDonation, Long
             BigDecimal remainingQuantity,
             LocalDateTime expiryTime);
 
+    List<FoodDonation> findByDonationTypeAndStatusInAndIsDeletedFalseAndRemainingQuantityGreaterThanAndExpiryTimeAfterOrderByExpiryTimeAsc(
+            DonationType donationType, Collection<DonationStatus> statuses, BigDecimal remainingQuantity, LocalDateTime expiryTime);
+
     List<FoodDonation> findByRestaurantAndStatus(Restaurant restaurant,
                                                  DonationStatus status);
 
@@ -36,6 +41,13 @@ public interface FoodDonationRepository extends JpaRepository<FoodDonation, Long
             Long id,
             Restaurant restaurant);
 
+    List<FoodDonation> findByDonorAndIsDeletedFalseOrderByCreatedAtDesc(
+            Donor donor);
+
+    Optional<FoodDonation> findByIdAndDonorAndIsDeletedFalse(
+            Long id,
+            Donor donor);
+
     Optional<FoodDonation> findByIdAndIsDeletedFalse(Long id);
 
     long countByStatus(DonationStatus status);
@@ -45,16 +57,21 @@ public interface FoodDonationRepository extends JpaRepository<FoodDonation, Long
             BigDecimal remainingQuantity,
             LocalDateTime expiryTime);
 
+    long countByDonationTypeAndStatusInAndIsDeletedFalseAndRemainingQuantityGreaterThanAndExpiryTimeAfter(
+            DonationType donationType, Collection<DonationStatus> statuses, BigDecimal remainingQuantity, LocalDateTime expiryTime);
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             update FoodDonation donation
             set donation.status = :expiredStatus
             where donation.isDeleted = false
               and donation.expiryTime <= :now
+              and donation.donationType = :donationType
               and donation.status in :expirableStatuses
             """)
     int markExpiredDonations(
             @Param("now") LocalDateTime now,
+            @Param("donationType") DonationType donationType,
             @Param("expiredStatus") DonationStatus expiredStatus,
             @Param("expirableStatuses") Collection<DonationStatus> expirableStatuses);
 }

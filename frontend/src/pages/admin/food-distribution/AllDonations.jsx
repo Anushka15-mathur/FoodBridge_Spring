@@ -34,9 +34,9 @@ export default function AllDonations(){
           <table className="w-full table-auto">
             <thead>
               <tr className="text-left">
-                <th className="px-4 py-2">Restaurant</th>
-                <th className="px-4 py-2">Food</th>
-                <th className="px-4 py-2">Quantity</th>
+                <th className="px-4 py-2">Source</th>
+                <th className="px-4 py-2">Donation</th>
+                <th className="px-4 py-2">Value</th>
                 <th className="px-4 py-2">Remaining</th>
                 <th className="px-4 py-2">Expiry</th>
                 <th className="px-4 py-2">Status</th>
@@ -45,11 +45,11 @@ export default function AllDonations(){
             <tbody>
               {donations.map((d) => (
                 <tr key={d.id} className="border-t">
-                  <td className="px-4 py-3">{d.restaurant}</td>
-                  <td className="px-4 py-3">{d.title}</td>
-                  <td className="px-4 py-3">{d.quantity}</td>
-                  <td className="px-4 py-3">{d.remainingQuantity}</td>
-                  <td className="px-4 py-3">{new Date(d.expiryTime).toLocaleString()}</td>
+                  <td className="px-4 py-3">{d.ownerType} · {d.owner}</td>
+                  <td className="px-4 py-3">{d.donationType === "MONEY" ? "Money donation" : d.title}</td>
+                  <td className="px-4 py-3">{d.donationType === "MONEY" ? `${d.currency || "INR"} ${d.amount}` : d.quantity}</td>
+                  <td className="px-4 py-3">{d.donationType === "MONEY" ? "—" : d.remainingQuantity}</td>
+                  <td className="px-4 py-3">{d.expiryTime ? new Date(d.expiryTime).toLocaleString() : "—"}</td>
                   <td className="px-4 py-3"><StatusBadge status={d.status} /></td>
                 </tr>
               ))}

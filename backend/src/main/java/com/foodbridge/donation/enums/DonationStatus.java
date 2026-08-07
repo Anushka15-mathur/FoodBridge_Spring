@@ -2,6 +2,12 @@ package com.foodbridge.donation.enums;
 
 public enum DonationStatus {
 
+    PENDING_REVIEW,
+
+    APPROVED,
+
+    REJECTED,
+
     AVAILABLE,
 
     REQUESTED,

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.foodbridge.donation.dto.CreateDonationRequest;
 import com.foodbridge.donation.dto.DonationResponse;
 import com.foodbridge.donation.dto.UpdateDonationRequest;
+import com.foodbridge.donation.dto.DonorDashboardResponse;
 import com.foodbridge.donation.service.DonationService;
 
 import jakarta.validation.Valid;
@@ -25,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/donations")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('RESTAURANT')")
+@PreAuthorize("hasAnyRole('RESTAURANT', 'DONOR')")
 public class DonationController {
 
     private final DonationService donationService;
@@ -40,6 +41,12 @@ public class DonationController {
     @GetMapping("/my")
     public ResponseEntity<List<DonationResponse>> getMyDonations() {
         return ResponseEntity.ok(donationService.getMyDonations());
+    }
+
+    @GetMapping("/donor-dashboard")
+    @PreAuthorize("hasRole('DONOR')")
+    public ResponseEntity<DonorDashboardResponse> getDonorDashboard() {
+        return ResponseEntity.ok(donationService.getDonorDashboard());
     }
 
     @GetMapping("/{donationId}")

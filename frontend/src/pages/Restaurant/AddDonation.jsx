@@ -20,10 +20,11 @@ const toDateTimeLocal = (date) => {
 const selectClassName =
     "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50";
 
-export default function AddDonation() {
+export default function AddDonation({ donorMode = false }) {
 
     const navigate = useNavigate();
     const [submitting, setSubmitting] = useState(false);
+    const [donationType, setDonationType] = useState("FOOD");
 
     const {
         register,
@@ -34,6 +35,10 @@ export default function AddDonation() {
     } = useForm({
         defaultValues: {
             foodName: "",
+            donationType: "FOOD",
+            amount: "",
+            currency: "INR",
+            donationPurpose: "",
             quantity: "",
             quantityUnit: "KG",
             estimatedMeals: "",
@@ -48,6 +53,7 @@ export default function AddDonation() {
     });
 
     useEffect(() => {
+        if (donorMode) return;
         const loadRestaurantAddress = async () => {
             try {
                 const profile = await restaurantService.getProfile();
@@ -69,21 +75,20 @@ export default function AddDonation() {
         };
 
         loadRestaurantAddress();
-    }, [setValue]);
+    }, [setValue, donorMode]);
 
     const onSubmit = async (data) => {
         try {
             setSubmitting(true);
 
-            await donationService.createDonation({
-                ...data,
-                quantity: Number(data.quantity),
-                estimatedMeals: Number(data.estimatedMeals),
-            });
+            const payload = donationType === "MONEY"
+                ? { donationType, amount: Number(data.amount), currency: data.currency || "INR", donationPurpose: data.donationPurpose, description: data.description }
+                : { ...data, donationType, quantity: Number(data.quantity), estimatedMeals: Number(data.estimatedMeals) };
+            await donationService.createDonation(payload);
 
             toast.success("Donation added successfully.");
             reset();
-            navigate("/restaurant/donations");
+            navigate(donorMode ? "/donor/donations" : "/restaurant/donations");
         } catch (error) {
             toast.error(
                 error.response?.data?.message ||
@@ -99,10 +104,10 @@ export default function AddDonation() {
         <div className="space-y-6">
             <div>
                 <h1 className="text-3xl font-bold">
-                    Add Food Donation
+                    {donorMode ? "Create Donation" : "Add Food Donation"}
                 </h1>
                 <p className="mt-1 text-muted-foreground">
-                    Enter the food, timing, quantity, and pickup details.
+                    {donorMode ? "Choose food or money and provide the relevant details." : "Enter the food, timing, quantity, and pickup details."}
                 </p>
             </div>
 
@@ -111,6 +116,22 @@ export default function AddDonation() {
                     onSubmit={handleSubmit(onSubmit)}
                     className="space-y-6"
                 >
+                    {donorMode && (
+                        <div className="rounded-lg border p-4">
+                            <p className="mb-3 font-medium">Donation Type</p>
+                            <div className="flex gap-6">
+                                <label className="flex items-center gap-2"><input type="radio" checked={donationType === "FOOD"} onChange={() => setDonationType("FOOD")} /> Food Donation</label>
+                                <label className="flex items-center gap-2"><input type="radio" checked={donationType === "MONEY"} onChange={() => setDonationType("MONEY")} /> Money Donation</label>
+                            </div>
+                        </div>
+                    )}
+                    {donationType === "MONEY" ? (
+                        <div className="space-y-5">
+                            <div className="grid gap-5 md:grid-cols-2"><div><label className="mb-2 block font-medium">Amount *</label><Input type="number" min="0.01" step="0.01" {...register("amount", { required: "Amount is required", min: { value: 0.01, message: "Amount must be greater than zero" } })} />{errors.amount && <p className="mt-1 text-sm text-red-500">{errors.amount.message}</p>}</div><div><label className="mb-2 block font-medium">Currency</label><Input value="INR" readOnly {...register("currency")} /></div></div>
+                            <div><label className="mb-2 block font-medium">Purpose</label><Input placeholder="Optional donation purpose" {...register("donationPurpose")} /></div>
+                            <div><label className="mb-2 block font-medium">Description</label><Textarea rows={4} placeholder="Optional description" {...register("description")} /></div>
+                        </div>
+                    ) : <>
                     <div className="grid gap-6 md:grid-cols-2">
                         <div>
                             <label className="mb-2 block font-medium">
@@ -296,7 +317,6 @@ export default function AddDonation() {
                             {...register("description")}
                         />
                     </div>
-
                     <div>
                         <label className="mb-2 block font-medium">
                             Special Instructions
@@ -307,6 +327,7 @@ export default function AddDonation() {
                             {...register("specialInstructions")}
                         />
                     </div>
+                    </>}
 
                     <Button
                         type="submit"

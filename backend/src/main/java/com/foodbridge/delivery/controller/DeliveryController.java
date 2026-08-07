@@ -1,6 +1,7 @@
 package com.foodbridge.delivery.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.foodbridge.delivery.dto.AssignDeliveryRequestDto;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/deliveries")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class DeliveryController {
 
     private final DeliveryService deliveryService;

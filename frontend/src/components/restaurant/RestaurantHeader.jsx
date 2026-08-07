@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import useAuth from "../../hooks/useAuth";
 import { Button } from "../ui/button";
 
-export default function RestaurantHeader() {
+export default function RestaurantHeader({ roleLabel = "RESTAURANT" }) {
 
   const navigate = useNavigate();
 
@@ -34,7 +34,7 @@ export default function RestaurantHeader() {
         </h2>
 
         <p className="text-sm text-muted-foreground">
-          RESTAURANT
+          {roleLabel}
         </p>
       </div>
 

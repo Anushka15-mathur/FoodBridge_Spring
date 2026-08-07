@@ -14,6 +14,7 @@ import AuthHeader from "../auth/AuthHeader";
 import PasswordInput from "../auth/PasswordInput";
 
 import { loginSchema } from "../../validation/authSchema";
+import { getRoleDashboardPath } from "../../utils/roleRedirect";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -47,41 +48,12 @@ export default function LoginForm() {
 
       toast.success(response.message);
 
-     if (response.user?.role === "ADMIN") {
-
-  navigate("/admin/dashboard");
-
-} else if (response.user?.role === "RESTAURANT") {
-
-  if (response.user.profileCompleted) {
-    navigate("/restaurant/dashboard");
-  } else {
-    navigate("/additional-info", {
-      replace: true,
-      state: { role: "RESTAURANT" },
-    });
-  }
-
-} else if (response.user?.role === "NGO") {
-
-  navigate("/ngo/dashboard");
-
-} else if (response.user?.role === "VOLUNTEER") {
-
-  if (response.user.profileCompleted) {
-    navigate("/volunteer/dashboard");
-  } else {
-    navigate("/additional-info", {
-      replace: true,
-      state: { role: "VOLUNTEER" },
-    });
-  }
-
-} else {
-
-  navigate("/");
-
-}
+      const { user } = response;
+      if (["RESTAURANT", "VOLUNTEER"].includes(user?.role) && !user.profileCompleted) {
+        navigate("/additional-info", { replace: true, state: { role: user.role } });
+      } else {
+        navigate(getRoleDashboardPath(user?.role), { replace: true });
+      }
 
     } catch (error) {
 
