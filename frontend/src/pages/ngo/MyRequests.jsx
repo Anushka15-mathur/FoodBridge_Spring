@@ -47,17 +47,28 @@ export default function MyRequests() {
                   <span className="ml-2 font-semibold">{request.status}</span>
                 </p>
 
-                {request.status === "APPROVED" && (
-                  <Button
-                    className="bg-green-600 hover:bg-green-700 text-white font-semibold shadow-md"
-                    onClick={() => {
-                      setSelectedRequestId(request.requestId);
-                      setAssignDialogOpen(true);
-                    }}
-                  >
-                    Assign Volunteer
-                  </Button>
-                )}
+                {request.status === "APPROVED" &&
+                  (!request.volunteerAssigned ? (
+                    <Button
+                      className="bg-green-600 hover:bg-green-700 text-white font-semibold shadow-md"
+                      onClick={() => {
+                        setSelectedRequestId(request.requestId);
+                        setAssignDialogOpen(true);
+                      }}
+                    >
+                      Assign Volunteer
+                    </Button>
+                  ) : (
+                    <div className="text-right">
+                      <p className="font-semibold text-green-600">
+                        ✓ Volunteer Assigned
+                      </p>
+
+                      <p className="text-sm text-gray-500">
+                        {request.volunteerName}
+                      </p>
+                    </div>
+                  ))}
               </div>
             </div>
           ))}

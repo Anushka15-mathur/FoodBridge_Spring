@@ -29,4 +29,8 @@ public class MyDonationRequestResponse {
     private DonationRequestStatus status;
 
     private LocalDateTime requestedAt;
+
+    private Boolean volunteerAssigned;
+
+    private String volunteerName;
 }
