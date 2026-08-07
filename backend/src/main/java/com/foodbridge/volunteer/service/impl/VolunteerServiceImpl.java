@@ -13,6 +13,7 @@ import com.foodbridge.delivery.entity.Delivery;
 import com.foodbridge.delivery.enums.DeliveryStatus;
 import com.foodbridge.delivery.repository.DeliveryRepository;
 import com.foodbridge.donation.entity.FoodDonation;
+import com.foodbridge.donation.enums.DonationStatus;
 import com.foodbridge.exception.ResourceNotFoundException;
 import com.foodbridge.profile.dto.request.VolunteerProfileRequest;
 import com.foodbridge.user.dto.response.UserResponse;
@@ -213,6 +214,11 @@ public class VolunteerServiceImpl implements VolunteerService {
 
         delivery.setStatus(DeliveryStatus.DELIVERED);
         delivery.setDeliveredTime(LocalDateTime.now());
+
+        FoodDonation donation = delivery.getAllocation().getDonationRequest().getDonation();
+        if (donation.getStatus() == DonationStatus.FULLY_ALLOCATED) {
+            donation.setStatus(DonationStatus.DELIVERED);
+        }
 
         deliveryRepository.save(delivery);
 

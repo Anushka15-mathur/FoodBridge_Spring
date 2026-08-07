@@ -15,6 +15,7 @@ import com.foodbridge.allocation.repository.DonationRequestRepository;
 import com.foodbridge.auth.service.AuthService;
 import com.foodbridge.donation.entity.FoodDonation;
 import com.foodbridge.donation.repository.FoodDonationRepository;
+import com.foodbridge.donation.enums.DonationType;
 import com.foodbridge.donation.service.DonationExpiryService;
 import com.foodbridge.exception.ResourceNotFoundException;
 import com.foodbridge.ngo.dto.DonationCardResponse;
@@ -120,7 +121,8 @@ Ngo ngo = ngoRepository.findByUser(user)
         .ngoName(ngo.getNgoName())
         .availableDonations(
                 foodDonationRepository
-                        .countByStatusInAndIsDeletedFalseAndRemainingQuantityGreaterThanAndExpiryTimeAfter(
+                        .countByDonationTypeAndStatusInAndIsDeletedFalseAndRemainingQuantityGreaterThanAndExpiryTimeAfter(
+                                DonationType.FOOD,
                                 donationExpiryService.getRequestableStatuses(),
                                 BigDecimal.ZERO,
                                 LocalDateTime.now()))
@@ -151,7 +153,8 @@ public List<DonationCardResponse> getAvailableDonations() {
     donationExpiryService.expireDonations();
 
     List<FoodDonation> donations = foodDonationRepository
-            .findByStatusInAndIsDeletedFalseAndRemainingQuantityGreaterThanAndExpiryTimeAfterOrderByExpiryTimeAsc(
+            .findByDonationTypeAndStatusInAndIsDeletedFalseAndRemainingQuantityGreaterThanAndExpiryTimeAfterOrderByExpiryTimeAsc(
+                    DonationType.FOOD,
                     donationExpiryService.getRequestableStatuses(),
                     BigDecimal.ZERO,
                     LocalDateTime.now());
@@ -161,7 +164,8 @@ public List<DonationCardResponse> getAvailableDonations() {
                     .id(donation.getId())
                     .title(donation.getTitle())
                     .restaurantName(
-                            donation.getRestaurant().getRestaurantName())
+                            donation.getRestaurant() != null ? donation.getRestaurant().getRestaurantName()
+                                    : donation.getDonor().getUser().getFirstName() + " " + donation.getDonor().getUser().getLastName())
                     .estimatedMeals(donation.getEstimatedMeals())
                     .quantity(donation.getQuantity())
                     .remainingQuantity(donation.getRemainingQuantity())
@@ -262,9 +266,9 @@ public List<MyDonationRequestResponse> getMyDonationRequests() {
                     .requestId(request.getId())
                     .donationId(request.getDonation().getId())
                     .donationTitle(request.getDonation().getTitle())
-                    .restaurantName(request.getDonation()
-                            .getRestaurant()
-                            .getRestaurantName())
+                    .restaurantName(request.getDonation().getRestaurant() != null
+                            ? request.getDonation().getRestaurant().getRestaurantName()
+                            : request.getDonation().getDonor().getUser().getFirstName() + " " + request.getDonation().getDonor().getUser().getLastName())
                     .requestedQuantity(request.getRequestedQuantity())
                     .status(request.getStatus())
                     .requestedAt(request.getRequestedAt())
@@ -289,8 +293,8 @@ public DonationDetailsResponse getDonationDetails(Long donationId) {
             .id(donation.getId())
             .title(donation.getTitle())
             .description(donation.getDescription())
-            .restaurantName(
-                    donation.getRestaurant().getRestaurantName())
+            .restaurantName(donation.getRestaurant() != null ? donation.getRestaurant().getRestaurantName()
+                    : donation.getDonor().getUser().getFirstName() + " " + donation.getDonor().getUser().getLastName())
             .foodType(donation.getFoodType())
             .foodCondition(donation.getFoodCondition())
             .quantity(donation.getQuantity())

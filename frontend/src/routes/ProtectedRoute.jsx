@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import { getRoleDashboardPath } from "../utils/roleRedirect";
 
 export default function ProtectedRoute({ allowedRoles }) {
     const {
@@ -25,7 +26,7 @@ export default function ProtectedRoute({ allowedRoles }) {
     }
 
     if (allowedRoles && !allowedRoles.includes(user.role)) {
-        return <Navigate to="/" replace />;
+        return <Navigate to={getRoleDashboardPath(user.role)} replace />;
     }
 
    if (

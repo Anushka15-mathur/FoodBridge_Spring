@@ -6,6 +6,7 @@ import AdminLayout from "../layouts/AdminLayout";
 import RestaurantLayout from "../layouts/RestaurantLayout";
 import NgoLayout from "../layouts/NgoLayout";
 import VolunteerLayout from "../layouts/VolunteerLayout";
+import DonorLayout from "../layouts/DonorLayout";
 
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
@@ -41,6 +42,8 @@ import Profile from "../pages/Restaurant/Profile";
 import AddDonation from "../pages/Restaurant/AddDonation";
 import DonationHistory from "../pages/Restaurant/DonationHistory";
 import RestaurantDonationDetails from "../pages/Restaurant/DonationDetails";
+import DonorDashboard from "../pages/donor/Dashboard";
+import DonorProfile from "../pages/donor/Profile";
 
 // NGO Pages
 import NgoDashboard from "../pages/ngo/Dashboard";
@@ -154,6 +157,16 @@ export default function AppRoutes() {
               path="/restaurant/donations/:id"
               element={<RestaurantDonationDetails />}
             />
+          </Route>
+        </Route>
+
+        <Route element={<ProtectedRoute allowedRoles={["DONOR"]} />}>
+          <Route element={<DonorLayout />}>
+            <Route path="/donor" element={<Navigate to="/donor/dashboard" replace />} />
+            <Route path="/donor/dashboard" element={<DonorDashboard />} />
+            <Route path="/donor/create-donation" element={<AddDonation donorMode />} />
+            <Route path="/donor/donations" element={<DonationHistory donorMode />} />
+            <Route path="/donor/profile" element={<DonorProfile />} />
           </Route>
         </Route>
 

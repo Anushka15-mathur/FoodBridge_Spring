@@ -3,6 +3,7 @@ package com.foodbridge.volunteer.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.foodbridge.profile.dto.request.VolunteerProfileRequest;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/volunteer")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('VOLUNTEER')")
 public class VolunteerController {
 
     private final VolunteerService volunteerService;

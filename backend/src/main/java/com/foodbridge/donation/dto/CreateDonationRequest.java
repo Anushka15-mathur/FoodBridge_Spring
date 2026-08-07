@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import com.foodbridge.delivery.enums.FoodCondition;
 import com.foodbridge.donation.enums.FoodType;
 import com.foodbridge.donation.enums.QuantityUnit;
+import com.foodbridge.donation.enums.DonationType;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -19,31 +20,32 @@ import lombok.Setter;
 @Setter
 public class CreateDonationRequest {
 
-    @NotBlank(message = "Food name is required")
     private String foodName;
+
+    private DonationType donationType = DonationType.FOOD;
+
+    @DecimalMin(value = "0.01", message = "Amount must be greater than zero")
+    private BigDecimal amount;
+
+    private String currency = "INR";
+    private String donationPurpose;
 
     private String description;
 
-    @NotNull(message = "Food type is required")
     private FoodType foodType;
 
-    @NotNull(message = "Quantity is required")
     @DecimalMin(value = "0.01", message = "Quantity must be greater than zero")
     private BigDecimal quantity;
 
-    @NotNull(message = "Quantity unit is required")
     private QuantityUnit quantityUnit;
 
-    @NotNull(message = "Estimated meals is required")
     @Min(value = 1, message = "Estimated meals must be at least 1")
     private Integer estimatedMeals;
 
     private LocalDateTime preparedAt;
 
-    @NotNull(message = "Expiry time is required")
     private LocalDateTime expiryTime;
 
-    @NotBlank(message = "Pickup address is required")
     private String pickupAddress;
 
     @DecimalMin(value = "-90.0", message = "Latitude must be between -90 and 90")
@@ -57,6 +59,5 @@ public class CreateDonationRequest {
     private String placeId;
     private String specialInstructions;
 
-    @NotNull(message = "Food condition is required")
     private FoodCondition foodCondition;
 }

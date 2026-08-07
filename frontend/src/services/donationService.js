@@ -11,6 +11,11 @@ const donationService = {
         return response.data;
     },
 
+    getDonorDashboard: async () => {
+        const response = await api.get("/donations/donor-dashboard");
+        return response.data;
+    },
+
     getDonationById: async (id) => {
         const response = await api.get(`/donations/${id}`);
         return response.data;

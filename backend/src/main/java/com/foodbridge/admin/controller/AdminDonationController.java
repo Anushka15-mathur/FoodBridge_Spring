@@ -33,8 +33,14 @@ public class AdminDonationController {
             return new Object() {
                 public final Long id = d.getId();
                 public final String title = d.getTitle();
-                public final String restaurant = d.getRestaurant().getRestaurantName();
+                public final String donationType = d.getDonationType().name();
+                public final String ownerType = d.getRestaurant() != null ? "RESTAURANT" : "DONOR";
+                public final String owner = d.getRestaurant() != null ? d.getRestaurant().getRestaurantName()
+                        : d.getDonor().getUser().getFirstName() + " " + d.getDonor().getUser().getLastName();
+                public final String restaurant = d.getRestaurant() != null ? d.getRestaurant().getRestaurantName() : null;
                 public final Object quantity = d.getQuantity();
+                public final Object amount = d.getAmount();
+                public final Object currency = d.getCurrency();
                 public final Object remainingQuantity = d.getRemainingQuantity();
                 public final Object expiryTime = d.getExpiryTime();
                 public final Object status = d.getStatus();

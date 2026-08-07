@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.foodbridge.donation.entity.FoodDonation;
 import com.foodbridge.donation.enums.DonationStatus;
+import com.foodbridge.donation.enums.DonationType;
 import com.foodbridge.donation.repository.FoodDonationRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class DonationExpiryService {
     public int expireDonations() {
         return foodDonationRepository.markExpiredDonations(
                 LocalDateTime.now(),
+                DonationType.FOOD,
                 DonationStatus.EXPIRED,
                 EXPIRABLE_STATUSES);
     }

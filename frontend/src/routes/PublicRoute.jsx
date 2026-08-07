@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import { getRoleDashboardPath } from "../utils/roleRedirect";
 
 export default function PublicRoute() {
     const {
@@ -12,13 +13,9 @@ export default function PublicRoute() {
         return null;
     }
 
-    // Admin ka existing behavior same rahega
-    if (isAuthenticated && user?.role === "ADMIN") {
-        return <Navigate to="/admin/dashboard" replace />;
+    if (isAuthenticated && user?.role) {
+        return <Navigate to={getRoleDashboardPath(user.role)} replace />;
     }
-
-    // Restaurant ko yahan redirect mat karo
-    // Restaurant redirect LoginForm aur ProtectedRoute handle karenge
 
     return <Outlet />;
 }

@@ -10,6 +10,9 @@ const statusStyles = {
   PICKED_UP: "bg-blue-100 text-blue-700 border-blue-300",
   DELIVERED: "bg-teal-100 text-teal-700 border-teal-300",
   CANCELLED: "bg-red-100 text-red-700 border-red-300",
+  PENDING_REVIEW: "bg-yellow-100 text-yellow-700 border-yellow-300",
+  APPROVED: "bg-green-100 text-green-700 border-green-300",
+  REJECTED: "bg-red-100 text-red-700 border-red-300",
 };
 
 const statusLabels = {
@@ -22,6 +25,9 @@ const statusLabels = {
   PICKED_UP: "Picked Up",
   DELIVERED: "Delivered",
   CANCELLED: "Cancelled",
+  PENDING_REVIEW: "Pending Review",
+  APPROVED: "Approved",
+  REJECTED: "Rejected",
 };
 
 export default function DonationStatusBadge({ status }) {

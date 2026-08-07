@@ -16,6 +16,7 @@ import com.foodbridge.delivery.enums.DeliveryStatus;
 import com.foodbridge.delivery.repository.DeliveryRepository;
 import com.foodbridge.delivery.service.DeliveryService;
 import com.foodbridge.exception.ResourceNotFoundException;
+import com.foodbridge.donation.enums.DonationStatus;
 import com.foodbridge.volunteer.entity.Volunteer;
 import com.foodbridge.volunteer.repository.VolunteerRepository;
 
@@ -113,6 +114,13 @@ public class DeliveryServiceImpl implements DeliveryService {
         delivery.setDeliveryVerified(true);
         delivery.setDeliveredTime(LocalDateTime.now());
         delivery.setStatus(DeliveryStatus.DELIVERED);
+
+        // A food donation becomes delivered only when its final allocation is delivered.
+        if (delivery.getAllocation().getDonationRequest().getDonation().getStatus()
+                == DonationStatus.FULLY_ALLOCATED) {
+            delivery.getAllocation().getDonationRequest().getDonation()
+                    .setStatus(DonationStatus.DELIVERED);
+        }
 
         Delivery saved = deliveryRepository.save(delivery);
 

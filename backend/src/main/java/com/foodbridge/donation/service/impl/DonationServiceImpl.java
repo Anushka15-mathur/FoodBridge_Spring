@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.foodbridge.donation.dto.CreateDonationRequest;
 import com.foodbridge.donation.dto.DonationResponse;
 import com.foodbridge.donation.dto.UpdateDonationRequest;
+import com.foodbridge.donation.dto.DonorDashboardResponse;
 import com.foodbridge.donation.entity.FoodDonation;
+import com.foodbridge.donation.enums.DonationType;
 import com.foodbridge.donation.enums.DonationStatus;
 import com.foodbridge.donation.repository.FoodDonationRepository;
 import com.foodbridge.donation.service.DonationService;
@@ -19,6 +21,8 @@ import com.foodbridge.exception.BadRequestException;
 import com.foodbridge.exception.ResourceNotFoundException;
 import com.foodbridge.restaurant.entity.Restaurant;
 import com.foodbridge.restaurant.repository.RestaurantRepository;
+import com.foodbridge.donor.entity.Donor;
+import com.foodbridge.donor.repository.DonorRepository;
 import com.foodbridge.security.SecurityUtils;
 import com.foodbridge.user.entity.User;
 import com.foodbridge.user.enums.Role;
@@ -32,11 +36,23 @@ public class DonationServiceImpl implements DonationService {
 
     private final FoodDonationRepository foodDonationRepository;
     private final RestaurantRepository restaurantRepository;
+    private final DonorRepository donorRepository;
     private final DonationExpiryService donationExpiryService;
 
     @Override
     public DonationResponse createDonation(CreateDonationRequest request) {
+        User user = SecurityUtils.getCurrentUser().getUser();
+        if (user.getRole() == Role.DONOR) {
+            return createDonorDonation(request, getCurrentDonor(user));
+        }
+        if (user.getRole() != Role.RESTAURANT) {
+            throw new BadRequestException("Only restaurants and donors can create donations.");
+        }
+        if (request.getDonationType() != DonationType.FOOD) {
+            throw new BadRequestException("Restaurants can create food donations only.");
+        }
         Restaurant restaurant = getCurrentRestaurant();
+        validateFoodRequest(request);
 
         LocalDateTime preparedAt = request.getPreparedAt() != null
                 ? request.getPreparedAt()
@@ -59,6 +75,7 @@ public class DonationServiceImpl implements DonationService {
 
         FoodDonation donation = FoodDonation.builder()
                 .restaurant(restaurant)
+                .donationType(DonationType.FOOD)
                 .title(request.getFoodName().trim())
                 .description(trimToNull(request.getDescription()))
                 .foodType(request.getFoodType())
@@ -85,6 +102,11 @@ public class DonationServiceImpl implements DonationService {
     public List<DonationResponse> getMyDonations() {
         donationExpiryService.expireDonations();
 
+        User user = SecurityUtils.getCurrentUser().getUser();
+        if (user.getRole() == Role.DONOR) {
+            return foodDonationRepository.findByDonorAndIsDeletedFalseOrderByCreatedAtDesc(getCurrentDonor(user))
+                    .stream().map(this::toResponse).toList();
+        }
         Restaurant restaurant = getCurrentRestaurant();
 
         return foodDonationRepository
@@ -99,12 +121,19 @@ public class DonationServiceImpl implements DonationService {
     public DonationResponse getDonation(Long donationId) {
         donationExpiryService.expireDonations();
 
+        User user = SecurityUtils.getCurrentUser().getUser();
+        if (user.getRole() == Role.DONOR) {
+            return toResponse(getOwnedDonation(donationId, getCurrentDonor(user)));
+        }
         Restaurant restaurant = getCurrentRestaurant();
         return toResponse(getOwnedDonation(donationId, restaurant));
     }
 
     @Override
     public DonationResponse updateDonation(Long donationId, UpdateDonationRequest request) {
+        if (SecurityUtils.getCurrentUser().getUser().getRole() == Role.DONOR) {
+            throw new BadRequestException("Donor donations cannot be edited after submission.");
+        }
         Restaurant restaurant = getCurrentRestaurant();
         FoodDonation donation = getOwnedDonation(donationId, restaurant);
 
@@ -189,12 +218,75 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public void deleteDonation(Long donationId) {
-        Restaurant restaurant = getCurrentRestaurant();
-        FoodDonation donation = getOwnedDonation(donationId, restaurant);
+        User user = SecurityUtils.getCurrentUser().getUser();
+        FoodDonation donation = user.getRole() == Role.DONOR
+                ? getOwnedDonation(donationId, getCurrentDonor(user))
+                : getOwnedDonation(donationId, getCurrentRestaurant());
 
         donation.setIsDeleted(true);
         donation.setStatus(DonationStatus.CANCELLED);
         foodDonationRepository.save(donation);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DonorDashboardResponse getDonorDashboard() {
+        User user = SecurityUtils.getCurrentUser().getUser();
+        Donor donor = getCurrentDonor(user);
+        List<FoodDonation> donations = foodDonationRepository.findByDonorAndIsDeletedFalseOrderByCreatedAtDesc(donor);
+        return DonorDashboardResponse.builder()
+                .totalDonations(donations.size())
+                .totalFoodDonations(donations.stream().filter(d -> d.getDonationType() == DonationType.FOOD).count())
+                .totalMoneyDonations(donations.stream().filter(d -> d.getDonationType() == DonationType.MONEY).count())
+                .totalAmountDonated(donations.stream().filter(d -> d.getDonationType() == DonationType.MONEY)
+                        .map(FoodDonation::getAmount).filter(java.util.Objects::nonNull)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add))
+                .totalMealsDonated(donations.stream().filter(d -> d.getDonationType() == DonationType.FOOD)
+                        .map(FoodDonation::getEstimatedMeals).filter(java.util.Objects::nonNull).mapToLong(Integer::longValue).sum())
+                .recentDonations(donations.stream().limit(5).map(this::toResponse).toList())
+                .build();
+    }
+
+    private DonationResponse createDonorDonation(CreateDonationRequest request, Donor donor) {
+        if (request.getDonationType() == DonationType.MONEY) {
+            if (request.getAmount() == null || request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+                throw new BadRequestException("Amount must be greater than zero.");
+            }
+            FoodDonation donation = FoodDonation.builder().donor(donor).donationType(DonationType.MONEY)
+                    .amount(request.getAmount()).currency(trimToNull(request.getCurrency()) == null ? "INR" : request.getCurrency().trim().toUpperCase())
+                    .donationPurpose(trimToNull(request.getDonationPurpose())).description(trimToNull(request.getDescription()))
+                    .status(DonationStatus.PENDING_REVIEW).build();
+            return toResponse(foodDonationRepository.save(donation));
+        }
+        if (request.getDonationType() != DonationType.FOOD) {
+            throw new BadRequestException("Donation type is required.");
+        }
+        validateFoodRequest(request);
+        LocalDateTime preparedAt = request.getPreparedAt() != null ? request.getPreparedAt() : LocalDateTime.now();
+        validateDateRange(preparedAt, request.getExpiryTime());
+        FoodDonation donation = FoodDonation.builder().donor(donor).donationType(DonationType.FOOD)
+                .title(request.getFoodName().trim()).description(trimToNull(request.getDescription())).foodType(request.getFoodType())
+                .quantity(request.getQuantity()).remainingQuantity(request.getQuantity()).quantityUnit(request.getQuantityUnit())
+                .estimatedMeals(request.getEstimatedMeals()).preparedAt(preparedAt).expiryTime(request.getExpiryTime())
+                .pickupAddress(request.getPickupAddress().trim()).latitude(request.getLatitude()).longitude(request.getLongitude())
+                .placeId(trimToNull(request.getPlaceId())).specialInstructions(trimToNull(request.getSpecialInstructions()))
+                .foodCondition(request.getFoodCondition()).status(DonationStatus.AVAILABLE).build();
+        return toResponse(foodDonationRepository.save(donation));
+    }
+
+    private void validateFoodRequest(CreateDonationRequest request) {
+        if (request.getFoodName() == null || request.getFoodName().trim().isEmpty() || request.getFoodType() == null
+                || request.getQuantity() == null || request.getQuantity().compareTo(BigDecimal.ZERO) <= 0
+                || request.getQuantityUnit() == null || request.getEstimatedMeals() == null || request.getEstimatedMeals() < 1
+                || request.getExpiryTime() == null || request.getPickupAddress() == null || request.getPickupAddress().trim().isEmpty()
+                || request.getFoodCondition() == null) {
+            throw new BadRequestException("All required food donation fields must be provided.");
+        }
+    }
+
+    private Donor getCurrentDonor(User user) {
+        if (user.getRole() != Role.DONOR) throw new BadRequestException("Only donors can access donor donations.");
+        return donorRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("Donor profile not found."));
     }
 
     private Restaurant getCurrentRestaurant() {
@@ -212,6 +304,11 @@ public class DonationServiceImpl implements DonationService {
     private FoodDonation getOwnedDonation(Long donationId, Restaurant restaurant) {
         return foodDonationRepository
                 .findByIdAndRestaurantAndIsDeletedFalse(donationId, restaurant)
+                .orElseThrow(() -> new ResourceNotFoundException("Donation not found."));
+    }
+
+    private FoodDonation getOwnedDonation(Long donationId, Donor donor) {
+        return foodDonationRepository.findByIdAndDonorAndIsDeletedFalse(donationId, donor)
                 .orElseThrow(() -> new ResourceNotFoundException("Donation not found."));
     }
 
@@ -237,6 +334,13 @@ public class DonationServiceImpl implements DonationService {
     private DonationResponse toResponse(FoodDonation donation) {
         return DonationResponse.builder()
                 .id(donation.getId())
+                .donationType(donation.getDonationType())
+                .ownerType(donation.getRestaurant() != null ? "RESTAURANT" : "DONOR")
+                .ownerName(donation.getRestaurant() != null ? donation.getRestaurant().getRestaurantName()
+                        : donation.getDonor().getUser().getFirstName() + " " + donation.getDonor().getUser().getLastName())
+                .amount(donation.getAmount())
+                .currency(donation.getCurrency())
+                .donationPurpose(donation.getDonationPurpose())
                 .foodName(donation.getTitle())
                 .description(donation.getDescription())
                 .foodType(donation.getFoodType())

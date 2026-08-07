@@ -38,7 +38,7 @@ const formatExpiry = (value) => {
     });
 };
 
-export default function DonationHistory() {
+export default function DonationHistory({ donorMode = false }) {
 
     const [donations, setDonations] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -135,15 +135,15 @@ export default function DonationHistory() {
                             <TableRow>
 
                                 <TableHead>
-                                    Food Name
+                                    Donation
                                 </TableHead>
 
                                 <TableHead>
-                                    Qty
+                                    Amount / Qty
                                 </TableHead>
 
                                 <TableHead>
-                                    Type
+                                    Donation Type
                                 </TableHead>
 
                                 <TableHead>
@@ -151,11 +151,11 @@ export default function DonationHistory() {
                                 </TableHead>
 
                                 <TableHead>
-                                    Expiry
+                                    Created
                                 </TableHead>
 
                                 <TableHead className="text-right">
-                                    Actions
+                                    {!donorMode && "Actions"}
                                 </TableHead>
 
                             </TableRow>
@@ -172,15 +172,15 @@ export default function DonationHistory() {
                                 >
 
                                     <TableCell className="font-medium">
-                                        {donation.foodName}
+                                        {donation.donationType === "MONEY" ? donation.donationPurpose || "Money Donation" : donation.foodName}
                                     </TableCell>
 
                                     <TableCell>
-                                        {donation.quantity} {donation.quantityUnit}
+                                        {donation.donationType === "MONEY" ? `${donation.currency || "INR"} ${donation.amount}` : `${donation.quantity} ${donation.quantityUnit}`}
                                     </TableCell>
 
                                     <TableCell>
-                                        {donation.foodType}
+                                        {donation.donationType || "FOOD"}
                                     </TableCell>
 
                                     <TableCell>
@@ -190,15 +190,15 @@ export default function DonationHistory() {
                                     </TableCell>
 
                                     <TableCell>
-                                        {formatExpiry(donation.expiryTime)}
+                                        {formatExpiry(donation.createdAt)}
                                     </TableCell>
 
                                     <TableCell className="text-right">
-                                        <DonationRowActions
+                                        {!donorMode && <DonationRowActions
                                             donation={donation}
                                             onUpdated={handleUpdated}
                                             onDeleted={handleDeleted}
-                                        />
+                                        />}
                                     </TableCell>
 
                                 </TableRow>
