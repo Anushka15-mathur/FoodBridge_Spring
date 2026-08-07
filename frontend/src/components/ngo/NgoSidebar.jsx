@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 import {
   LayoutDashboard,
   UtensilsCrossed,
@@ -32,6 +33,7 @@ const menuItems = [
 
 export default function NgoSidebar() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
     const confirmLogout = window.confirm(
@@ -40,15 +42,12 @@ export default function NgoSidebar() {
 
     if (!confirmLogout) return;
 
-    localStorage.clear();
-    sessionStorage.clear();
-
+    logout();
     navigate("/login", { replace: true });
   };
 
   return (
-    <aside className="flex min-h-screen w-64 flex-col border-r bg-white">
-
+    <aside className="flex h-screen w-64 flex-col border-r bg-white shadow-sm">
       {/* Logo */}
       <div className="border-b p-6">
         <h1 className="text-2xl font-bold text-green-600">
