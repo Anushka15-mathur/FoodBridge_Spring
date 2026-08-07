@@ -14,6 +14,7 @@ import com.foodbridge.donation.entity.FoodDonation;
 import com.foodbridge.donation.enums.DonationStatus;
 import com.foodbridge.donation.repository.FoodDonationRepository;
 import com.foodbridge.donation.service.DonationService;
+import com.foodbridge.donation.service.DonationExpiryService;
 import com.foodbridge.exception.BadRequestException;
 import com.foodbridge.exception.ResourceNotFoundException;
 import com.foodbridge.restaurant.entity.Restaurant;
@@ -31,6 +32,7 @@ public class DonationServiceImpl implements DonationService {
 
     private final FoodDonationRepository foodDonationRepository;
     private final RestaurantRepository restaurantRepository;
+    private final DonationExpiryService donationExpiryService;
 
     @Override
     public DonationResponse createDonation(CreateDonationRequest request) {
@@ -81,6 +83,8 @@ public class DonationServiceImpl implements DonationService {
     @Override
     @Transactional(readOnly = true)
     public List<DonationResponse> getMyDonations() {
+        donationExpiryService.expireDonations();
+
         Restaurant restaurant = getCurrentRestaurant();
 
         return foodDonationRepository
@@ -93,6 +97,8 @@ public class DonationServiceImpl implements DonationService {
     @Override
     @Transactional(readOnly = true)
     public DonationResponse getDonation(Long donationId) {
+        donationExpiryService.expireDonations();
+
         Restaurant restaurant = getCurrentRestaurant();
         return toResponse(getOwnedDonation(donationId, restaurant));
     }

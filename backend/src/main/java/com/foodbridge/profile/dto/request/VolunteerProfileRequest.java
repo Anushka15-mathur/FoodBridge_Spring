@@ -10,6 +10,20 @@ import lombok.Setter;
 @Setter
 public class VolunteerProfileRequest {
 
+    private String drivingLicenseNumber;
+
+    private String aadhaarNumber;
+
+    private String emergencyContact;
+
+    private String address;
+
+    private String city;
+
+    private String state;
+
+    private String pincode;
+
     @DecimalMin(value = "-90.0")
     @DecimalMax(value = "90.0")
     private Double currentLatitude;

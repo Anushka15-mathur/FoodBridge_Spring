@@ -17,6 +17,7 @@ import {
 } from "../../components/ui/dialog";
 
 import ngoService from "../../services/ngoService";
+import { isDonationRequestable } from "../../utils/donationEligibility";
 
 export default function DonationDetails() {
   const { id } = useParams();
@@ -38,6 +39,12 @@ export default function DonationDetails() {
     try {
       const response = await ngoService.getDonationDetails(id);
 
+      if (!isDonationRequestable(response)) {
+        toast.error("This donation is no longer available.");
+        navigate("/ngo/donations", { replace: true });
+        return;
+      }
+
       setDonation(response);
     } catch (error) {
       console.error(error);
@@ -49,6 +56,12 @@ export default function DonationDetails() {
   }
 
   async function handleClaimDonation() {
+
+    if (!isDonationRequestable(donation)) {
+      toast.error("This donation is no longer available.");
+      navigate("/ngo/donations", { replace: true });
+      return;
+    }
     if (!requestedQuantity) {
       toast.error("Please enter requested quantity.");
       return;

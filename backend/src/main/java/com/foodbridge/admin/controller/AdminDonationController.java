@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.foodbridge.donation.repository.FoodDonationRepository;
 import com.foodbridge.donation.entity.FoodDonation;
+import com.foodbridge.donation.service.DonationExpiryService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,9 +20,12 @@ import lombok.RequiredArgsConstructor;
 public class AdminDonationController {
 
     private final FoodDonationRepository foodDonationRepository;
+    private final DonationExpiryService donationExpiryService;
 
     @GetMapping
     public ResponseEntity<List<Object>> getAllDonations() {
+
+        donationExpiryService.expireDonations();
 
         List<FoodDonation> list = foodDonationRepository.findAll();
 

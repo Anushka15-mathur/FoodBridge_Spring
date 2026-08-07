@@ -19,6 +19,7 @@ import com.foodbridge.allocation.repository.DonationRequestRepository;
 import com.foodbridge.allocation.service.AllocationService;
 import com.foodbridge.donation.entity.FoodDonation;
 import com.foodbridge.donation.enums.DonationStatus;
+import com.foodbridge.donation.service.DonationExpiryService;
 import com.foodbridge.exception.BadRequestException;
 import com.foodbridge.exception.ResourceNotFoundException;
 import com.foodbridge.user.entity.User;
@@ -39,9 +40,13 @@ public class AllocationServiceImpl implements AllocationService {
     private final DonationAllocationRepository donationAllocationRepository;
     
     private final DonationAllocationMapper donationAllocationMapper;
+
+    private final DonationExpiryService donationExpiryService;
     
     @Override
     public AllocationResponseDto allocateDonation(AllocationRequestDto requestDto) {
+
+        donationExpiryService.expireDonations();
 
     	//validate request
         DonationRequest donationRequest = donationRequestRepository
@@ -60,6 +65,11 @@ public class AllocationServiceImpl implements AllocationService {
 
         if (donation == null) {
             throw new ResourceNotFoundException("Food donation not found.");
+        }
+
+        if (!donationExpiryService.isRequestable(donation)) {
+            throw new BadRequestException(
+                    "Donation is no longer available for allocation.");
         }
 
         if (donation.getRemainingQuantity()

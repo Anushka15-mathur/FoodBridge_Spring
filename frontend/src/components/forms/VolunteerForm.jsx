@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -11,8 +12,43 @@ export default function VolunteerForm({ onSubmit }) {
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
     } = useForm();
+
+    const [locationError, setLocationError] = useState("");
+    const [locating, setLocating] = useState(false);
+
+    const useCurrentLocation = () => {
+        if (!navigator.geolocation) {
+            setLocationError(
+                "Location is not supported by this browser. Enter the coordinates manually."
+            );
+            return;
+        }
+
+        setLocating(true);
+        setLocationError("");
+
+        navigator.geolocation.getCurrentPosition(
+            ({ coords }) => {
+                setValue("currentLatitude", coords.latitude, {
+                    shouldValidate: true,
+                });
+                setValue("currentLongitude", coords.longitude, {
+                    shouldValidate: true,
+                });
+                setLocating(false);
+            },
+            () => {
+                setLocationError(
+                    "We could not get your location. Allow location access or enter the coordinates manually."
+                );
+                setLocating(false);
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    };
 
     return (
         <form
@@ -27,7 +63,9 @@ export default function VolunteerForm({ onSubmit }) {
 
                 <Input
                     placeholder="Driving License Number"
-                    {...register("drivingLicenseNumber")}
+                    {...register("drivingLicenseNumber", {
+                        required: "Driving license number is required",
+                    })}
                 />
 
                 {errors.drivingLicenseNumber && (
@@ -38,13 +76,29 @@ export default function VolunteerForm({ onSubmit }) {
 
                 <Input
                     placeholder="Aadhaar Number"
-                    {...register("aadhaarNumber")}
+                    {...register("aadhaarNumber", {
+                        required: "Aadhaar number is required",
+                    })}
                 />
+
+                {errors.aadhaarNumber && (
+                    <p className="text-sm text-red-500">
+                        {errors.aadhaarNumber.message}
+                    </p>
+                )}
 
                 <Input
                     placeholder="Emergency Contact"
-                    {...register("emergencyContact")}
+                    {...register("emergencyContact", {
+                        required: "Emergency contact is required",
+                    })}
                 />
+
+                {errors.emergencyContact && (
+                    <p className="text-sm text-red-500">
+                        {errors.emergencyContact.message}
+                    </p>
+                )}
 
             </FormSection>
 
@@ -53,7 +107,86 @@ export default function VolunteerForm({ onSubmit }) {
                 <AddressFields
                     register={register}
                     errors={errors}
+                    required
                 />
+
+            </FormSection>
+
+            <FormSection
+                title="Current Location"
+                description="This helps us assign nearby deliveries."
+            >
+
+                <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                        <Input
+                            type="number"
+                            step="any"
+                            placeholder="Current Latitude"
+                            {...register("currentLatitude", {
+                                required: "Current latitude is required",
+                                valueAsNumber: true,
+                                min: {
+                                    value: -90,
+                                    message: "Latitude must be between -90 and 90",
+                                },
+                                max: {
+                                    value: 90,
+                                    message: "Latitude must be between -90 and 90",
+                                },
+                            })}
+                        />
+
+                        {errors.currentLatitude && (
+                            <p className="mt-1 text-sm text-red-500">
+                                {errors.currentLatitude.message}
+                            </p>
+                        )}
+                    </div>
+
+                    <div>
+                        <Input
+                            type="number"
+                            step="any"
+                            placeholder="Current Longitude"
+                            {...register("currentLongitude", {
+                                required: "Current longitude is required",
+                                valueAsNumber: true,
+                                min: {
+                                    value: -180,
+                                    message: "Longitude must be between -180 and 180",
+                                },
+                                max: {
+                                    value: 180,
+                                    message: "Longitude must be between -180 and 180",
+                                },
+                            })}
+                        />
+
+                        {errors.currentLongitude && (
+                            <p className="mt-1 text-sm text-red-500">
+                                {errors.currentLongitude.message}
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                <div>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={useCurrentLocation}
+                        disabled={locating}
+                    >
+                        {locating ? "Getting location..." : "Use My Current Location"}
+                    </Button>
+
+                    {locationError && (
+                        <p className="mt-2 text-sm text-red-500">
+                            {locationError}
+                        </p>
+                    )}
+                </div>
 
             </FormSection>
 

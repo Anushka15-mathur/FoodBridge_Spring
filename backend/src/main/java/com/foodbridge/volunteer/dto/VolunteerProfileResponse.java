@@ -26,4 +26,18 @@ public class VolunteerProfileResponse {
     private String drivingLicensePath;
 
     private String identityProofPath;
+
+    private String drivingLicenseNumber;
+
+    private String aadhaarNumber;
+
+    private String emergencyContact;
+
+    private String address;
+
+    private String city;
+
+    private String state;
+
+    private String pincode;
 }
